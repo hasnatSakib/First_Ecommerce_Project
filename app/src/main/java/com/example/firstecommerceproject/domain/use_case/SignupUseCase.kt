@@ -7,7 +7,11 @@ import javax.inject.Inject
 class SignupUseCase @Inject constructor(
     private val repository: AuthRepository
 ) {
-    suspend operator fun invoke(name: String, email: String, password: String): Result<FirebaseUser> {
+    suspend operator fun invoke(
+        name: String,
+        email: String,
+        password: String
+    ): Result<FirebaseUser> {
         if (name.isBlank() || email.isBlank() || password.isBlank()) {
             return Result.failure(Exception("All fields are required"))
         }

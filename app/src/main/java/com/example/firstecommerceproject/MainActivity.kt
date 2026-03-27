@@ -17,18 +17,20 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val signupViewModel : SignupViewModel by viewModels()
-    private val loginViewModel : LoginViewModel by viewModels()
+    private val signupViewModel: SignupViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             FirstEcommerceProjectTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()){innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     AppNavigation(
                         modifier = Modifier.padding(innerPadding),
+                        isLoggedIn = loginViewModel.isUserLoggedIn(),
                         loginViewModel = loginViewModel,
-                        signupViewModel = signupViewModel
+                        signupViewModel = signupViewModel,
                     )
                 }
             }

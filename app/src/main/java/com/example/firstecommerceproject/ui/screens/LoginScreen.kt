@@ -18,11 +18,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,15 +32,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
+import com.example.firstecommerceproject.ui.util.AppUtil
 import com.example.firstecommerceproject.ui.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     loginViewModel: LoginViewModel,
-    onNavigateToSignup: () -> Unit
+    onNavigateToSignup: () -> Unit,
+    onLoginSuccess: () -> Unit
 ) {
     val loginUiState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(loginUiState.isLoginSuccessful) {
+        if (loginUiState.isLoginSuccessful) {
+            AppUtil.showToast(context, "Login Successful")
+            onLoginSuccess()
+        }
+    }
 
     Box(
         modifier = modifier

@@ -42,10 +42,13 @@ fun AuthScreen(modifier: Modifier, navController: NavHostController) {
         Image(
             painter = painterResource(id = R.drawable.banner_1),
             contentDescription = "Banner",
-            modifier = Modifier.fillMaxWidth().height(300.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
         )
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Start Shopping journey with DepotCart",
+        Text(
+            text = "Start Shopping journey with DepotCart",
             style = TextStyle(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -54,7 +57,8 @@ fun AuthScreen(modifier: Modifier, navController: NavHostController) {
             )
         )
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Shop Countrywide, Pick Up Locally",
+        Text(
+            text = "Shop Countrywide, Pick Up Locally",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = FontFamily.SansSerif,
@@ -64,19 +68,21 @@ fun AuthScreen(modifier: Modifier, navController: NavHostController) {
         Button(
             onClick = { navController.navigate(route = Routes.LoginScreen.route) },
             modifier = Modifier
-                .fillMaxWidth().height(80.dp)
+                .fillMaxWidth()
+                .height(80.dp)
                 .padding(top = 20.dp),
             content = {
-                Text(text = "Login" , fontSize = 20.sp)
+                Text(text = "Login", fontSize = 20.sp)
             }
         )
         OutlinedButton(
             onClick = { navController.navigate(route = Routes.SignUpScreen.route) },
             modifier = Modifier
-                .fillMaxWidth().height(80.dp)
+                .fillMaxWidth()
+                .height(80.dp)
                 .padding(top = 20.dp),
             content = {
-                Text(text = "Sign Up" , fontSize = 20.sp)
+                Text(text = "Sign Up", fontSize = 20.sp)
             }
         )
     }

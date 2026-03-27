@@ -19,17 +19,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.firstecommerceproject.ui.screens.common.WaveHeader
 import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
+import com.example.firstecommerceproject.ui.util.AppUtil
 import com.example.firstecommerceproject.ui.viewmodel.SignupViewModel
 
 
@@ -37,9 +40,18 @@ import com.example.firstecommerceproject.ui.viewmodel.SignupViewModel
 fun SignupScreen(
     modifier: Modifier = Modifier,
     signupViewModel: SignupViewModel,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onSignupSuccess: () -> Unit
 ) {
     val signupUiState by signupViewModel.signupUiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(signupUiState.isSignupSuccessful) {
+        if (signupUiState.isSignupSuccessful) {
+            AppUtil.showToast(context, "Signup Successful")
+            onSignupSuccess()
+        }
+    }
 
     Box(
         modifier = modifier

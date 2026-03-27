@@ -15,7 +15,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val authUseCases: AuthUseCases
 ) : ViewModel() {
-    
+
     private val _loginUiState = MutableStateFlow(LoginUiState())
     val loginUiState = _loginUiState.asStateFlow()
 
@@ -25,6 +25,10 @@ class LoginViewModel @Inject constructor(
 
     fun onPasswordChange(newValue: String) {
         _loginUiState.update { it.copy(password = newValue) }
+    }
+
+    fun isUserLoggedIn(): Boolean {
+        return authUseCases.getCurrentUser() != null
     }
 
     fun onLoginClick() {

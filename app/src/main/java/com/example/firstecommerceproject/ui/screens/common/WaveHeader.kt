@@ -23,9 +23,11 @@ import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
 // ---------- WAVE HEADER ----------
 @Composable
 fun WaveHeader(titleTop: String, titleMain: String) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(160.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(160.dp)
+    ) {
 
         Canvas(modifier = Modifier.matchParentSize()) {
             val path = Path().apply {
@@ -59,6 +61,7 @@ fun WaveHeader(titleTop: String, titleMain: String) {
         }
     }
 }
+
 @Preview(showBackground = true, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable

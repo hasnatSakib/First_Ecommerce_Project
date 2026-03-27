@@ -28,7 +28,11 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signup(name: String, email: String, password: String): Result<FirebaseUser> {
+    override suspend fun signup(
+        name: String,
+        email: String,
+        password: String
+    ): Result<FirebaseUser> {
         return try {
             val user = firebaseAuthService.signUp(email, password)
             if (user != null) {

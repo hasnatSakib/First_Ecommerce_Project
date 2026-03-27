@@ -26,7 +26,8 @@ class FirebaseAuthService @Inject constructor(
     }
 
     suspend fun saveUserData(uid: String, data: Map<String, Any>) {
-        firestore.collection("users").document(uid).set(data).await()
+        firestore.collection("users").document(uid).collection("info").document("profile_data")
+            .set(data).await()
     }
 
     fun signOut() {
