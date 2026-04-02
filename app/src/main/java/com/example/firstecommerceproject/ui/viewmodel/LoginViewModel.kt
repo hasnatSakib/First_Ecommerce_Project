@@ -51,4 +51,24 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+
+    fun onLogOutClick() {
+        viewModelScope.launch {
+            val result = authUseCases.logout()
+            _loginUiState.update { state ->
+                result.fold(
+                    onSuccess = {
+                        state.copy(logoutSuccess = true, isLoginSuccessful = false)
+                    },
+                    onFailure = { error ->
+                        state.copy(errorMessage = error.message)
+                    }
+                )
+            }
+        }
+    }
+
+    fun resetLogoutState() {
+        _loginUiState.update { it.copy(logoutSuccess = false) }
+    }
 }

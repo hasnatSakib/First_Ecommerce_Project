@@ -1,4 +1,4 @@
-package com.example.firstecommerceproject.domain.use_case
+package com.example.firstecommerceproject.domain.use_case.auth
 
 import com.example.firstecommerceproject.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseUser

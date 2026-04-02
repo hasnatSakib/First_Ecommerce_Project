@@ -48,15 +48,21 @@ class AuthRepositoryImpl @Inject constructor(
                 Result.failure(Exception("Signup failed: User is null"))
             }
         } catch (e: FirebaseAuthUserCollisionException) {
-            // Industry Standard: Provide a clear message for existing emails
             Result.failure(Exception("This email address is already in use by another account."))
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    override suspend fun logout() {
-        firebaseAuthService.signOut()
+    override suspend fun logout(): Result<Boolean> {
+        return try {
+            firebaseAuthService.signOut()
+            Result.success(true)
+        } catch (
+            e: Exception
+        ) {
+            Result.failure(e)
+        }
     }
 
     override fun isUserLoggedIn(): Boolean {

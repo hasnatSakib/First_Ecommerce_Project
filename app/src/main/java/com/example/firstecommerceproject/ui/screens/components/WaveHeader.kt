@@ -1,4 +1,4 @@
-package com.example.firstecommerceproject.ui.screens.common
+package com.example.firstecommerceproject.ui.screens.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Canvas

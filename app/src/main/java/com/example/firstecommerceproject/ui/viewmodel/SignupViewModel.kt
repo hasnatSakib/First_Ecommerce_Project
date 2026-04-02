@@ -1,11 +1,9 @@
 package com.example.firstecommerceproject.ui.viewmodel
 
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.firstecommerceproject.domain.use_case.AuthUseCases
 import com.example.firstecommerceproject.ui.states.SignupUiState
-import com.example.firstecommerceproject.ui.util.AppUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -1,13 +1,19 @@
 package com.example.firstecommerceproject.di
 
 import com.example.firstecommerceproject.data.remote.api.FirebaseAuthService
+import com.example.firstecommerceproject.data.remote.api.FirebaseDataService
 import com.example.firstecommerceproject.data.repositoryImpl.AuthRepositoryImpl
+import com.example.firstecommerceproject.data.repositoryImpl.DataRepositoryImpl
 import com.example.firstecommerceproject.domain.repository.AuthRepository
+import com.example.firstecommerceproject.domain.repository.DataRepository
 import com.example.firstecommerceproject.domain.use_case.AuthUseCases
-import com.example.firstecommerceproject.domain.use_case.GetCurrentUserUseCase
-import com.example.firstecommerceproject.domain.use_case.LoginUseCase
-import com.example.firstecommerceproject.domain.use_case.LogoutUseCase
-import com.example.firstecommerceproject.domain.use_case.SignupUseCase
+import com.example.firstecommerceproject.domain.use_case.DataUseCases
+import com.example.firstecommerceproject.domain.use_case.auth.GetCurrentUserUseCase
+import com.example.firstecommerceproject.domain.use_case.auth.LoginUseCase
+import com.example.firstecommerceproject.domain.use_case.auth.LogoutUseCase
+import com.example.firstecommerceproject.domain.use_case.auth.SignupUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetBannersUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetNameUseCase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -39,12 +45,27 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideDataRepository(
+        dataService: FirebaseDataService
+    ): DataRepository = DataRepositoryImpl(dataService)
+
+    @Provides
+    @Singleton
     fun provideAuthUseCases(repository: AuthRepository): AuthUseCases {
         return AuthUseCases(
             login = LoginUseCase(repository),
             signup = SignupUseCase(repository),
             logout = LogoutUseCase(repository),
             getCurrentUser = GetCurrentUserUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataUseCases(repository: DataRepository): DataUseCases {
+        return DataUseCases(
+            getName = GetNameUseCase(repository),
+            getBanners = GetBannersUseCase(repository)
         )
     }
 }

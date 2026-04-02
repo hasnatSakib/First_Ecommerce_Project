@@ -6,9 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.firstecommerceproject.ui.screens.AuthScreen
-import com.example.firstecommerceproject.ui.screens.HomeScreen
+import com.example.firstecommerceproject.ui.screens.LandingScreen
 import com.example.firstecommerceproject.ui.screens.LoginScreen
 import com.example.firstecommerceproject.ui.screens.SignupScreen
+import com.example.firstecommerceproject.ui.viewmodel.HomeViewModel
 import com.example.firstecommerceproject.ui.viewmodel.LoginViewModel
 import com.example.firstecommerceproject.ui.viewmodel.SignupViewModel
 
@@ -16,12 +17,14 @@ import com.example.firstecommerceproject.ui.viewmodel.SignupViewModel
 fun AppNavigation(
     modifier: Modifier = Modifier,
     isLoggedIn: Boolean,
-    loginViewModel: LoginViewModel, signupViewModel: SignupViewModel,
+    loginViewModel: LoginViewModel,
+    signupViewModel: SignupViewModel,
+    homeViewModel: HomeViewModel
 ) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = if (isLoggedIn) Routes.HomeScreen.route else Routes.AuthScreen.route
+        startDestination = if (isLoggedIn) Routes.LandingScreen.route else Routes.AuthScreen.route
     ) {
         composable(route = Routes.AuthScreen.route) {
             AuthScreen(modifier, navController)
@@ -34,7 +37,9 @@ fun AppNavigation(
                     navController.navigate(Routes.SignUpScreen.route)
                 },
                 onLoginSuccess = {
-                    navController.navigate(Routes.HomeScreen.route)
+                    navController.navigate(Routes.LandingScreen.route) {
+                        popUpTo(Routes.AuthScreen.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -46,12 +51,17 @@ fun AppNavigation(
                     navController.navigate(Routes.LoginScreen.route)
                 },
                 onSignupSuccess = {
-                    navController.navigate(Routes.HomeScreen.route)
+                    navController.navigate(Routes.LandingScreen.route) {
+                        popUpTo(Routes.AuthScreen.route) { inclusive = true }
+                    }
                 }
             )
         }
-        composable(route = Routes.HomeScreen.route) {
-            HomeScreen(modifier = modifier)
+        composable(route = Routes.LandingScreen.route) {
+            LandingScreen(
+                modifier = modifier,
+                homeViewModel = homeViewModel
+            )
         }
     }
 }

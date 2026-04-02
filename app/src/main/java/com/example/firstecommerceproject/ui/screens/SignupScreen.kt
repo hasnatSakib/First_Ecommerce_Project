@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.firstecommerceproject.ui.screens.common.WaveHeader
+import com.example.firstecommerceproject.ui.screens.components.WaveHeader
 import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
 import com.example.firstecommerceproject.ui.util.AppUtil
 import com.example.firstecommerceproject.ui.viewmodel.SignupViewModel

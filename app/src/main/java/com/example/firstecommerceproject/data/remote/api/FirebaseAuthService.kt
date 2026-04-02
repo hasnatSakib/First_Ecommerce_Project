@@ -30,7 +30,12 @@ class FirebaseAuthService @Inject constructor(
             .set(data).await()
     }
 
-    fun signOut() {
-        auth.signOut()
+    fun signOut(): Boolean {
+        return try {
+            auth.signOut()
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }

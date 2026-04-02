@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.firstecommerceproject.ui.navigation.AppNavigation
 import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
+import com.example.firstecommerceproject.ui.viewmodel.HomeViewModel
 import com.example.firstecommerceproject.ui.viewmodel.LoginViewModel
 import com.example.firstecommerceproject.ui.viewmodel.SignupViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val signupViewModel: SignupViewModel by viewModels()
     private val loginViewModel: LoginViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +33,7 @@ class MainActivity : ComponentActivity() {
                         isLoggedIn = loginViewModel.isUserLoggedIn(),
                         loginViewModel = loginViewModel,
                         signupViewModel = signupViewModel,
+                        homeViewModel = homeViewModel
                     )
                 }
             }
