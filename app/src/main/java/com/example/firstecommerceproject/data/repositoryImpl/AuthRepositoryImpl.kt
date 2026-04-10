@@ -68,4 +68,13 @@ class AuthRepositoryImpl @Inject constructor(
     override fun isUserLoggedIn(): Boolean {
         return firebaseAuthService.currentUser != null
     }
+    override suspend fun getName(): Result<String?> {
+        return try {
+            val document = firebaseAuthService.getName()
+            val name = document?.getString("name")
+            Result.success(name)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

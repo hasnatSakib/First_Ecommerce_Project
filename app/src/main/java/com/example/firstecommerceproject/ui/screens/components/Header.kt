@@ -5,62 +5,73 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
 
-
+/**
+ * A header component for the Home screen that displays a welcome message and a search action.
+ *
+ * @param modifier Modifier for the root Row container.
+ * @param name The name of the user to be displayed in the welcome message.
+ */
 @Composable
 fun HeaderView(modifier: Modifier = Modifier, name: String) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(text = "Welcome back")
+        Column {
+            // Secondary greeting text using variant color for visual hierarchy
             Text(
-                text = name, style = TextStyle(
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red
-                )
+                text = "Welcome back,",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            // Primary user name text with bold weight and brand color
+            Text(
+                text = name,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = MaterialTheme.colorScheme.primary
             )
         }
+
+        // Search icon button - placeholder for search functionality
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = { /* TODO: Implement Search functionality in future iteration */ },
         ) {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search products",
+                tint = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
-
 }
 
+/**
+ * Previews for HeaderView in both Light and Dark modes.
+ */
 @Preview(showBackground = true, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 fun PreviewHeaderView() {
     FirstEcommerceProjectTheme {
         Surface {
-            HeaderView(name = "User Name")
+            HeaderView(name = "Happy Customer")
         }
     }
 }

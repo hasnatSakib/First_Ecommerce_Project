@@ -13,7 +13,9 @@ import com.example.firstecommerceproject.domain.use_case.auth.LoginUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.LogoutUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.SignupUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetBannersUseCase
-import com.example.firstecommerceproject.domain.use_case.data.GetNameUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetCategoryUseCase
+import com.example.firstecommerceproject.domain.use_case.auth.GetNameUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetProductsByCategoryUseCase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -46,7 +48,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDataRepository(
-        dataService: FirebaseDataService
+        dataService: FirebaseDataService,
     ): DataRepository = DataRepositoryImpl(dataService)
 
     @Provides
@@ -56,16 +58,18 @@ object AppModule {
             login = LoginUseCase(repository),
             signup = SignupUseCase(repository),
             logout = LogoutUseCase(repository),
-            getCurrentUser = GetCurrentUserUseCase(repository)
+            getCurrentUser = GetCurrentUserUseCase(repository),
+            getName = GetNameUseCase(repository)
         )
     }
 
     @Provides
     @Singleton
-    fun provideDataUseCases(repository: DataRepository): DataUseCases {
+    fun provideDataUseCases(dataRepository: DataRepository): DataUseCases {
         return DataUseCases(
-            getName = GetNameUseCase(repository),
-            getBanners = GetBannersUseCase(repository)
+            getBanners = GetBannersUseCase(dataRepository),
+            getCategories = GetCategoryUseCase(dataRepository),
+            getProductsByCategory = GetProductsByCategoryUseCase(dataRepository)
         )
     }
 }

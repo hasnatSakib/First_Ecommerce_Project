@@ -8,4 +8,5 @@ interface AuthRepository {
     suspend fun signup(name: String, email: String, password: String): Result<FirebaseUser>
     suspend fun logout(): Result<Boolean>
     fun isUserLoggedIn(): Boolean
+    suspend fun getName(): Result<String?>
 }

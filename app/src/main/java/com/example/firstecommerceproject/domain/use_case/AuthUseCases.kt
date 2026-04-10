@@ -4,10 +4,12 @@ import com.example.firstecommerceproject.domain.use_case.auth.GetCurrentUserUseC
 import com.example.firstecommerceproject.domain.use_case.auth.LoginUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.LogoutUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.SignupUseCase
+import com.example.firstecommerceproject.domain.use_case.auth.GetNameUseCase
 
 data class AuthUseCases(
     val login: LoginUseCase,
     val signup: SignupUseCase,
     val logout: LogoutUseCase,
-    val getCurrentUser: GetCurrentUserUseCase
+    val getCurrentUser: GetCurrentUserUseCase,
+    val getName: GetNameUseCase,
 )

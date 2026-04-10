@@ -11,26 +11,52 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Login screen, managing authentication state and user input.
+ *
+ * This ViewModel interacts with [AuthUseCases] to handle login, logout, and 
+ * session state verification.
+ *
+ * @property authUseCases The collection of use cases for authentication operations.
+ */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authUseCases: AuthUseCases
 ) : ViewModel() {
 
     private val _loginUiState = MutableStateFlow(LoginUiState())
+
+    /**
+     * Observable state representing the current UI state of the Login screen.
+     */
     val loginUiState = _loginUiState.asStateFlow()
 
+    /**
+     * Updates the email address in the current UI state.
+     */
     fun onEmailChange(newValue: String) {
         _loginUiState.update { it.copy(email = newValue) }
     }
 
+    /**
+     * Updates the password in the current UI state.
+     */
     fun onPasswordChange(newValue: String) {
         _loginUiState.update { it.copy(password = newValue) }
     }
 
+    /**
+     * Checks if a user is currently logged into the application.
+     * 
+     * @return true if an active user session exists, false otherwise.
+     */
     fun isUserLoggedIn(): Boolean {
         return authUseCases.getCurrentUser() != null
     }
 
+    /**
+     * Triggers the login process using the current email and password in the state.
+     */
     fun onLoginClick() {
         val email = _loginUiState.value.email
         val password = _loginUiState.value.password
@@ -52,6 +78,9 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Triggers the logout process to clear the current user session.
+     */
     fun onLogOutClick() {
         viewModelScope.launch {
             val result = authUseCases.logout()
@@ -68,6 +97,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Resets the [LoginUiState.logoutSuccess] flag.
+     * 
+     * Should be called after the UI has reacted to a successful logout.
+     */
     fun resetLogoutState() {
         _loginUiState.update { it.copy(logoutSuccess = false) }
     }

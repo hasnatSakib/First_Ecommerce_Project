@@ -11,30 +11,56 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Signup screen, managing user registration state and input.
+ *
+ * This ViewModel interacts with [AuthUseCases] to create new user accounts.
+ *
+ * @property authUseCases The collection of use cases for authentication operations.
+ */
 @HiltViewModel
 class SignupViewModel @Inject constructor(
     private val authUseCases: AuthUseCases
 ) : ViewModel() {
 
     private val _signupUiState = MutableStateFlow(SignupUiState())
+
+    /**
+     * Observable state representing the current UI state of the Signup screen.
+     */
     val signupUiState = _signupUiState.asStateFlow()
 
+    /**
+     * Updates the username in the current UI state.
+     */
     fun onUsernameChange(newValue: String) {
         _signupUiState.update { it.copy(username = newValue) }
     }
 
+    /**
+     * Updates the email address in the current UI state.
+     */
     fun onEmailChange(newValue: String) {
         _signupUiState.update { it.copy(email = newValue) }
     }
 
+    /**
+     * Updates the password in the current UI state.
+     */
     fun onPasswordChange(newValue: String) {
         _signupUiState.update { it.copy(password = newValue) }
     }
 
+    /**
+     * Updates the mobile number in the current UI state.
+     */
     fun onMobileChange(newValue: String) {
         _signupUiState.update { it.copy(mobile = newValue) }
     }
 
+    /**
+     * Triggers the signup process using the current input values in the state.
+     */
     fun onSignupClick() {
         val name = _signupUiState.value.username
         val email = _signupUiState.value.email
