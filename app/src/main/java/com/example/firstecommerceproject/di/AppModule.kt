@@ -15,6 +15,7 @@ import com.example.firstecommerceproject.domain.use_case.auth.SignupUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetBannersUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetCategoryUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.GetNameUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetProductByIdUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetProductsByCategoryUseCase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -69,7 +70,8 @@ object AppModule {
         return DataUseCases(
             getBanners = GetBannersUseCase(dataRepository),
             getCategories = GetCategoryUseCase(dataRepository),
-            getProductsByCategory = GetProductsByCategoryUseCase(dataRepository)
+            getProductsByCategory = GetProductsByCategoryUseCase(dataRepository),
+            getProductById = GetProductByIdUseCase(dataRepository)
         )
     }
 }

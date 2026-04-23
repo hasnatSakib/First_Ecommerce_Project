@@ -10,10 +10,32 @@ import androidx.compose.ui.graphics.Color
  * in [Theme.kt].
  */
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Light Mode Colors
+val CoralPrimary = Color(0xFFD32F2F)
+val NavySecondary = Color(0xFF303F9F)
+val TealTertiary = Color(0xFF00796B)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Container Colors (Light Mode)
+val NavySecondaryContainer = Color(0xFFE8EAF6)
+val OnNavySecondaryContainer = Color(0xFF1A237E)
+val CoralPrimaryContainer = Color(0xFFFFDAD6)
+val OnCoralPrimaryContainer = Color(0xFF410002)
+val SurfaceVariantLight = Color(0xFFE1E2EC)
+val OnSurfaceVariantLight = Color(0xFF44474F)
+
+// Dark Mode Colors (Lighter versions of the same hues)
+val CoralPrimaryDark = Color(0xFFFF8989)
+val NavySecondaryDark = Color(0xFF9FA8DA)
+val TealTertiaryDark = Color(0xFF80CBC4)
+
+// Container Colors (Dark Mode)
+val NavySecondaryContainerDark = Color(0xFF3F51B5)
+val OnNavySecondaryContainerDark = Color(0xFFE8EAF6)
+val CoralPrimaryContainerDark = Color(0xFF93000A)
+val OnCoralPrimaryContainerDark = Color(0xFFFFDAD6)
+val SurfaceVariantDark = Color(0xFF44474F)
+val OnSurfaceVariantDark = Color(0xFFC4C6D0)
+
+// Neutral Colors
+val DarkBackground = Color(0xFF121212)
+val DarkSurface = Color(0xFF1E1E1E)

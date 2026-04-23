@@ -112,7 +112,7 @@ fun BannerView(
         if (bannerList.size > 1) {
             Spacer(modifier = Modifier.height(12.dp))
             // Custom dot indicator with expansion animations.
-            BannerIndicator(
+            PagerIndicator(
                 count = bannerList.size,
                 selectedIndex = pagerState.currentPage % bannerList.size
             )
@@ -142,48 +142,5 @@ private fun BannerItem(
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-    }
-}
-
-/**
- * A custom pager indicator with smooth color and width transitions.
- */
-@Composable
-private fun BannerIndicator(
-    count: Int,
-    selectedIndex: Int,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.height(8.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        repeat(count) { iteration ->
-            val isSelected = selectedIndex == iteration
-
-            val color by animateColorAsState(
-                targetValue = if (isSelected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                },
-                label = "dotColor"
-            )
-
-            val width by animateDpAsState(
-                targetValue = if (isSelected) 18.dp else 8.dp,
-                label = "dotWidth"
-            )
-
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .clip(CircleShape)
-                    .background(color)
-                    .width(width)
-                    .height(8.dp)
-            )
-        }
     }
 }

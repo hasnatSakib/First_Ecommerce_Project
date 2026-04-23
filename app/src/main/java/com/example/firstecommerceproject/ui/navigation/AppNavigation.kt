@@ -12,9 +12,11 @@ import com.example.firstecommerceproject.ui.screens.AuthScreen
 import com.example.firstecommerceproject.ui.screens.ProductsByCategoryScreen
 import com.example.firstecommerceproject.ui.screens.LandingScreen
 import com.example.firstecommerceproject.ui.screens.LoginScreen
+import com.example.firstecommerceproject.ui.screens.ProductDetailsPage
 import com.example.firstecommerceproject.ui.screens.SignupScreen
 import com.example.firstecommerceproject.ui.viewmodel.HomeViewModel
 import com.example.firstecommerceproject.ui.viewmodel.LoginViewModel
+import com.example.firstecommerceproject.ui.viewmodel.ProductDetailsViewModel
 import com.example.firstecommerceproject.ui.viewmodel.ProductsByCategoryViewModel
 import com.example.firstecommerceproject.ui.viewmodel.SignupViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -124,7 +126,25 @@ fun AppNavigation(
                 modifier = modifier,
                 category = category,
                 onBackClick = { navController.popBackStack() },
+                onProductClick = { productId ->
+                    navController.navigate(Routes.ProductDetailsScreen.createRoute(productId))
+                },
                 productsByCategoryViewModel = productsByCategoryViewModel
+            )
+        }
+
+        // Product Details Screen
+        composable(
+            route = Routes.ProductDetailsScreen.route,
+            arguments = listOf(navArgument("productId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            val productDetailsViewModel: ProductDetailsViewModel = hiltViewModel()
+            ProductDetailsPage(
+                modifier = modifier,
+                productId = productId,
+                viewModel = productDetailsViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

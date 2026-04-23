@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,48 +18,69 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
 
 /**
- * A header component for the Home screen that displays a welcome message and a search action.
+ * A header component for the Home screen that displays a welcome message and action buttons.
  *
- * @param modifier Modifier for the root Row container.
- * @param name The name of the user to be displayed in the welcome message.
+ * @param name The name of the user to be displayed.
+ * @param modifier Modifier for the root container.
+ * @param onSearchClick Callback for search action.
+ * @param onNotificationClick Callback for notification action.
  */
 @Composable
-fun HeaderView(modifier: Modifier = Modifier, name: String) {
+fun HeaderView(
+    name: String,
+    modifier: Modifier = Modifier,
+    onSearchClick: () -> Unit = {},
+    onNotificationClick: () -> Unit = {}
+) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
-            // Secondary greeting text using variant color for visual hierarchy
+        Column(modifier = Modifier.weight(1f)) {
+            // Secondary greeting text
             Text(
                 text = "Welcome back,",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            // Primary user name text with bold weight and brand color
+            // User name text
             Text(
                 text = name,
-                style = MaterialTheme.typography.headlineSmall.copy(
+                style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold
                 ),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
-
-        // Search icon button - placeholder for search functionality
-        IconButton(
-            onClick = { /* TODO: Implement Search functionality in future iteration */ },
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search products",
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+            IconButton(onClick = onSearchClick) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search products",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            IconButton(onClick = onNotificationClick) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Notifications",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
@@ -71,7 +94,10 @@ fun HeaderView(modifier: Modifier = Modifier, name: String) {
 fun PreviewHeaderView() {
     FirstEcommerceProjectTheme {
         Surface {
-            HeaderView(name = "Happy Customer")
+            HeaderView(
+                name = "Happy Customer",
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
         }
     }
 }

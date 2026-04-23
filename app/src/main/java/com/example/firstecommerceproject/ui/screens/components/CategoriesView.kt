@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.firstecommerceproject.domain.models.Category
 
+import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
+
 /**
  * A horizontal scrollable list of categories.
  *
@@ -119,7 +121,7 @@ fun CategoryItem(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 fun PreviewCategoriesView() {
-    MaterialTheme {
+    FirstEcommerceProjectTheme {
         Surface {
             CategoriesView(
                 categoriesList = listOf(

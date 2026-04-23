@@ -8,24 +8,46 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 /**
  * Default dark color scheme for the application.
  */
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = CoralPrimaryDark,
+    onPrimary = Color(0xFF560000), // Darker red for text on coral
+    primaryContainer = CoralPrimaryContainerDark,
+    onPrimaryContainer = OnCoralPrimaryContainerDark,
+    secondary = NavySecondaryDark,
+    onSecondary = Color(0xFF000D60),
+    secondaryContainer = NavySecondaryContainerDark,
+    onSecondaryContainer = OnNavySecondaryContainerDark,
+    tertiary = TealTertiaryDark,
+    background = DarkBackground,
+    surface = DarkSurface,
+    onBackground = Color(0xFFE3E2E6),
+    onSurface = Color(0xFFE3E2E6),
+    surfaceVariant = SurfaceVariantDark,
+    onSurfaceVariant = OnSurfaceVariantDark
 )
 
-/**
- * Default light color scheme for the application.
- */
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = CoralPrimary,
+    onPrimary = Color.White,
+    primaryContainer = CoralPrimaryContainer,
+    onPrimaryContainer = OnCoralPrimaryContainer,
+    secondary = NavySecondary,
+    onSecondary = Color.White,
+    secondaryContainer = NavySecondaryContainer,
+    onSecondaryContainer = OnNavySecondaryContainer,
+    tertiary = TealTertiary,
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
+    surfaceVariant = SurfaceVariantLight,
+    onSurfaceVariant = OnSurfaceVariantLight
 )
 
 /**
@@ -41,7 +63,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun FirstEcommerceProjectTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
