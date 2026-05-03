@@ -7,6 +7,7 @@ import com.example.firstecommerceproject.ui.states.ProductDetailsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,7 +15,7 @@ import javax.inject.Inject
 /**
  * ViewModel for the Product Details screen.
  *
- * This ViewModel handles the logic for fetching specific product details from the
+ * This ViewModel handles the logic for observing specific product details from the
  * data layer and exposing them as a lifecycle-aware [ProductDetailsUiState] flow.
  *
  * @property dataUseCases The entry point to domain layer logic.
@@ -33,25 +34,26 @@ class ProductDetailsViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     /**
-     * Fetches detailed information for a product by its [productId].
+     * Starts observing detailed information for a product by its [productId].
      *
-     * Updates [uiState] to reflect loading, success, or error states.
+     * Updates [uiState] to reflect loading, success, or error states in real-time.
      *
      * @param productId The ID of the product to fetch.
      */
     fun getProductDetails(productId: String) {
-        // Reset state to loading before starting the fetch
+        // Reset state to loading before starting the observation
         _uiState.update { it.copy(isLoading = true, errorMessage = null) }
         
         viewModelScope.launch {
-            val result = dataUseCases.getProductById(productId)
-            result.onSuccess { product ->
-                _uiState.update { 
-                    it.copy(product = product, isLoading = false) 
-                }
-            }.onFailure { error ->
-                _uiState.update { 
-                    it.copy(errorMessage = error.message ?: "Failed to load product details", isLoading = false) 
+            dataUseCases.observeProductById(productId).collectLatest { result ->
+                result.onSuccess { product ->
+                    _uiState.update { 
+                        it.copy(product = product, isLoading = false) 
+                    }
+                }.onFailure { error ->
+                    _uiState.update { 
+                        it.copy(errorMessage = error.message ?: "Failed to load product details", isLoading = false) 
+                    }
                 }
             }
         }

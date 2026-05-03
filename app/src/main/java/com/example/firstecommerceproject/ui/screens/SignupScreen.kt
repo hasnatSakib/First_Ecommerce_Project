@@ -1,42 +1,62 @@
 package com.example.firstecommerceproject.ui.screens
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.firstecommerceproject.ui.screens.components.WaveHeader
-import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
 import com.example.firstecommerceproject.ui.util.AppUtil
 import com.example.firstecommerceproject.ui.viewmodel.SignupViewModel
 
 /**
  * Signup Screen for new users.
- * Handles user registration by collecting username, email, password, and mobile number.
+ * Handles user registration by collecting firstName, lastName, email, phone, and password.
  *
  * @param modifier Modifier for the screen container.
  * @param signupViewModel ViewModel managing signup state and actions.
@@ -53,11 +73,23 @@ fun SignupScreen(
     // Observe UI state from ViewModel using lifecycle-aware collector
     val signupUiState by signupViewModel.signupUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
+
+    // Focus requesters for automatic transition
+    val lastNameFocusRequester = remember { FocusRequester() }
+    val emailFocusRequester = remember { FocusRequester() }
+    val phoneFocusRequester = remember { FocusRequester() }
+    val passwordFocusRequester = remember { FocusRequester() }
+    val confirmPasswordFocusRequester = remember { FocusRequester() }
+
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
 
     // Handle navigation side-effect when registration is successful
     LaunchedEffect(signupUiState.isSignupSuccessful) {
         if (signupUiState.isSignupSuccessful) {
-            AppUtil.showToast(context, "Signup Successful")
+            AppUtil.showToast(context, "Signup Successful! A verification email has been sent.")
             onSignupSuccess()
         }
     }
@@ -73,6 +105,7 @@ fun SignupScreen(
                     )
                 )
             )
+            .verticalScroll(scrollState)
     ) {
         Card(
             modifier = Modifier
@@ -88,7 +121,7 @@ fun SignupScreen(
             Column(modifier = Modifier.fillMaxWidth()) {
 
                 // Visual header with wave effect and greeting
-                WaveHeader(titleTop = "Hello,", titleMain = "Sign up!")
+                WaveHeader(titleTop = "Join us,", titleMain = "Sign up!")
 
                 Column(
                     modifier = Modifier
@@ -96,15 +129,43 @@ fun SignupScreen(
                         .fillMaxWidth()
                 ) {
 
-                    // Username Input
-                    OutlinedTextField(
-                        value = signupUiState.username,
-                        onValueChange = signupViewModel::onUsernameChange,
-                        label = { Text("User name") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true
-                    )
+                    // First Name & Last Name in a Row
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = signupUiState.firstName,
+                            onValueChange = signupViewModel::onFirstNameChange,
+                            label = { Text("First Name") },
+                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { lastNameFocusRequester.requestFocus() }
+                            )
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedTextField(
+                            value = signupUiState.lastName,
+                            onValueChange = signupViewModel::onLastNameChange,
+                            label = { Text("Last Name") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .focusRequester(lastNameFocusRequester),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { emailFocusRequester.requestFocus() }
+                            )
+                        )
+                    }
 
                     Spacer(Modifier.height(16.dp))
 
@@ -113,9 +174,41 @@ fun SignupScreen(
                         value = signupUiState.email,
                         onValueChange = signupViewModel::onEmailChange,
                         label = { Text("Email") },
-                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(emailFocusRequester),
                         shape = RoundedCornerShape(12.dp),
-                        singleLine = true
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { phoneFocusRequester.requestFocus() }
+                        )
+                    )
+
+                    Spacer(Modifier.height(16.dp))
+
+                    // Phone Input
+                    OutlinedTextField(
+                        value = signupUiState.mobile,
+                        onValueChange = signupViewModel::onMobileChange,
+                        label = { Text("Phone") },
+                        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(phoneFocusRequester),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Phone,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { passwordFocusRequester.requestFocus() }
+                        )
                     )
 
                     Spacer(Modifier.height(16.dp))
@@ -125,22 +218,58 @@ fun SignupScreen(
                         value = signupUiState.password,
                         onValueChange = signupViewModel::onPasswordChange,
                         label = { Text("Password") },
-                        visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                        trailingIcon = {
+                            val icon = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(imageVector = icon, contentDescription = if (passwordVisible) "Hide password" else "Show password")
+                            }
+                        },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(passwordFocusRequester),
                         shape = RoundedCornerShape(12.dp),
-                        singleLine = true
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { confirmPasswordFocusRequester.requestFocus() }
+                        )
                     )
 
                     Spacer(Modifier.height(16.dp))
 
-                    // Mobile Number Input
+                    // Re-enter Password Input
                     OutlinedTextField(
-                        value = signupUiState.mobile,
-                        onValueChange = signupViewModel::onMobileChange,
-                        label = { Text("Mobile") },
-                        modifier = Modifier.fillMaxWidth(),
+                        value = signupUiState.confirmPassword,
+                        onValueChange = signupViewModel::onConfirmPasswordChange,
+                        label = { Text("Re-enter Password") },
+                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                        trailingIcon = {
+                            val icon = if (confirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                            IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                                Icon(imageVector = icon, contentDescription = if (confirmPasswordVisible) "Hide password" else "Show password")
+                            }
+                        },
+                        visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(confirmPasswordFocusRequester),
                         shape = RoundedCornerShape(12.dp),
-                        singleLine = true
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                                signupViewModel.onSignupClick()
+                            }
+                        )
                     )
 
                     Spacer(Modifier.height(32.dp))
@@ -185,20 +314,6 @@ fun SignupScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-/**
- * Previews for SignupScreen in both light and dark modes.
- */
-@Preview(showBackground = true, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Composable
-fun PreviewSignupScreen() {
-    FirstEcommerceProjectTheme {
-        Surface {
-            // Preview logic removed as it requires complex ViewModel mocking
         }
     }
 }

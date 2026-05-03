@@ -31,10 +31,17 @@ class SignupViewModel @Inject constructor(
     val signupUiState = _signupUiState.asStateFlow()
 
     /**
-     * Updates the username in the current UI state.
+     * Updates the first name in the current UI state.
      */
-    fun onUsernameChange(newValue: String) {
-        _signupUiState.update { it.copy(username = newValue) }
+    fun onFirstNameChange(newValue: String) {
+        _signupUiState.update { it.copy(firstName = newValue) }
+    }
+
+    /**
+     * Updates the last name in the current UI state.
+     */
+    fun onLastNameChange(newValue: String) {
+        _signupUiState.update { it.copy(lastName = newValue) }
     }
 
     /**
@@ -52,6 +59,13 @@ class SignupViewModel @Inject constructor(
     }
 
     /**
+     * Updates the confirm password in the current UI state.
+     */
+    fun onConfirmPasswordChange(newValue: String) {
+        _signupUiState.update { it.copy(confirmPassword = newValue) }
+    }
+
+    /**
      * Updates the mobile number in the current UI state.
      */
     fun onMobileChange(newValue: String) {
@@ -62,14 +76,17 @@ class SignupViewModel @Inject constructor(
      * Triggers the signup process using the current input values in the state.
      */
     fun onSignupClick() {
-        val name = _signupUiState.value.username
+        val firstName = _signupUiState.value.firstName
+        val lastName = _signupUiState.value.lastName
         val email = _signupUiState.value.email
+        val phone = _signupUiState.value.mobile
         val password = _signupUiState.value.password
+        val confirmPassword = _signupUiState.value.confirmPassword
 
         _signupUiState.update { it.copy(isLoading = true, errorMessage = null) }
 
         viewModelScope.launch {
-            val result = authUseCases.signup(name, email, password)
+            val result = authUseCases.signup(firstName, lastName, email, phone, password, confirmPassword)
             _signupUiState.update { state ->
                 result.fold(
                     onSuccess = {

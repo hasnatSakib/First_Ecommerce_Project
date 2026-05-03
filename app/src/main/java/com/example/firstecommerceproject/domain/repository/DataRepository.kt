@@ -2,6 +2,7 @@ package com.example.firstecommerceproject.domain.repository
 
 import com.example.firstecommerceproject.domain.models.Category
 import com.example.firstecommerceproject.domain.models.Product
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository interface for managing e-commerce data.
@@ -42,4 +43,11 @@ interface DataRepository {
      * @return A [Result] containing the [Product] details or an error.
      */
     suspend fun getProductById(productId: String): Result<Product?>
+
+    /**
+     * Observes a specific product by its ID in real-time.
+     * @param productId The unique identifier for the product.
+     * @return A [Flow] emitting [Result]s containing the [Product] details.
+     */
+    fun observeProductById(productId: String): Flow<Result<Product?>>
 }

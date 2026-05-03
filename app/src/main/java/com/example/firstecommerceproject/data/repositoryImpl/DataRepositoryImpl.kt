@@ -4,6 +4,9 @@ import com.example.firstecommerceproject.data.remote.api.FirebaseDataService
 import com.example.firstecommerceproject.domain.models.Category
 import com.example.firstecommerceproject.domain.models.Product
 import com.example.firstecommerceproject.domain.repository.DataRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
@@ -26,7 +29,7 @@ class DataRepositoryImpl @Inject constructor(
             val document = firebaseDataService.getBanners()
 
             @Suppress("UNCHECKED_CAST")
-            val banners = document?.get("urls") as? List<String>
+            val banners = document?.get("imageUrls") as? List<String>
             Result.success(banners)
         } catch (e: Exception) {
             Result.failure(e)
@@ -95,7 +98,7 @@ class DataRepositoryImpl @Inject constructor(
     override suspend fun getProductById(productId: String): Result<Product?> {
         return try {
             val document = firebaseDataService.getProductById(productId)
-            val product = document?.toObject(Product::class.java)
+            val product = document?.toObject(Product::class.java)?.copy(id = document.id)
             if (product != null) {
                 Result.success(product)
             } else {
@@ -104,5 +107,23 @@ class DataRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    /**
+     * Observes a specific product by its ID in real-time.
+     */
+    override fun observeProductById(productId: String): Flow<Result<Product?>> {
+        return firebaseDataService.observeProductById(productId)
+            .map { document ->
+                val product = document?.toObject(Product::class.java)?.copy(id = document.id)
+                if (product != null) {
+                    Result.success(product)
+                } else {
+                    Result.failure(Exception("Product not found"))
+                }
+            }
+            .catch { e ->
+                emit(Result.failure(e))
+            }
     }
 }

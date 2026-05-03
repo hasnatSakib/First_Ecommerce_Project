@@ -37,11 +37,17 @@ class FirebaseAuthService @Inject constructor(
     }
 
     /**
+     * Sends a verification email to the currently signed-in user.
+     */
+    suspend fun sendEmailVerification() {
+        auth.currentUser?.sendEmailVerification()?.await()
+    }
+
+    /**
      * Saves additional user profile information to Firestore.
      */
     suspend fun saveUserData(uid: String, data: Map<String, Any>) {
-        firestore.collection("users").document(uid).collection("info").document("profile_data")
-            .set(data).await()
+        firestore.collection("users").document(uid).set(data).await()
     }
 
     /**
@@ -59,16 +65,19 @@ class FirebaseAuthService @Inject constructor(
 
     /**
      * Retrieves the current user's profile document from Firestore.
-     *
-     * This method now uses the internal [auth] and [firestore] instances.
      */
-    suspend fun getName(): DocumentSnapshot? {
+    suspend fun getUserProfile(): DocumentSnapshot? {
         val uid = auth.currentUser?.uid ?: return null
         return firestore.collection("users")
             .document(uid)
-            .collection("info")
-            .document("profile_data")
             .get()
             .await()
+    }
+
+    /**
+     * Retrieves the current user's name from Firestore.
+     */
+    suspend fun getName(): DocumentSnapshot? {
+        return getUserProfile()
     }
 }

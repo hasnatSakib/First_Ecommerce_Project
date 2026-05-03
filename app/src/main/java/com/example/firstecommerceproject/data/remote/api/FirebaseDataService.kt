@@ -5,6 +5,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,16 +37,15 @@ class FirebaseDataService @Inject constructor(
      * @return A [DocumentSnapshot] containing banner data, or null if not found.
      */
     suspend fun getBanners(): DocumentSnapshot? {
-        return firestore.collection("data").document("banners").get().await()
+        return firestore.collection("promotions").document("banners").get().await()
     }
-
     /**
      * Fetches all product categories from the "data/stock/categories" collection.
      *
      * @return A [QuerySnapshot] containing all category documents.
      */
     suspend fun getCategories(): QuerySnapshot? {
-        return firestore.collection("data").document("stock").collection("categories").get().await()
+        return firestore.collection("categories").get().await()
     }
 
     /**
@@ -83,5 +85,27 @@ class FirebaseDataService @Inject constructor(
             .document(productId)
             .get()
             .await()
+    }
+
+    /**
+     * Observes a single product by its unique ID in real-time.
+     *
+     * @param productId The ID of the product to observe.
+     * @return A [Flow] of [DocumentSnapshot] updates.
+     */
+    fun observeProductById(productId: String): Flow<DocumentSnapshot?> = callbackFlow {
+        val subscription = firestore.collection("data")
+            .document("stock")
+            .collection("products")
+            .document(productId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                trySend(snapshot)
+            }
+        
+        awaitClose { subscription.remove() }
     }
 }

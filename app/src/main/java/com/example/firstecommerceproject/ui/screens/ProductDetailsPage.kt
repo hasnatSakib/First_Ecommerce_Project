@@ -1,20 +1,50 @@
 package com.example.firstecommerceproject.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.*
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +67,7 @@ import com.example.firstecommerceproject.ui.viewmodel.ProductDetailsViewModel
  * Stateful entry point for the Product Details screen.
  *
  * This composable connects the UI to the [ProductDetailsViewModel] and manages 
- * the initial data fetch side-effect.
+ * the initial data fetch side effect.
  *
  * @param modifier Modifier for the container.
  * @param productId Unique identifier of the product to display.
@@ -63,7 +93,9 @@ fun ProductDetailsPage(
         modifier = modifier,
         uiState = uiState,
         onBackClick = onBackClick,
-        onAddToCart = { /* TODO: Implement add to cart logic */ }
+        onAddToCart = { _, _ -> 
+            /* TODO: Implement add to cart logic */
+        }
     )
 }
 
@@ -84,8 +116,11 @@ fun ProductDetailsContent(
     uiState: ProductDetailsUiState,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onAddToCart: (Product) -> Unit = {}
+    onAddToCart: (Product, Map<String, String>) -> Unit = { _, _ -> }
 ) {
+    // Selection state managed at the Content level for hoisting
+    val selectedOptions = remember { mutableStateMapOf<String, String>() }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -111,18 +146,20 @@ fun ProductDetailsContent(
         bottomBar = {
             // Show bottom bar only when product data is successfully loaded
             uiState.product?.let { product ->
+                val isOutOfStock = product.stockCount <= 0
                 BottomAppBar(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     Button(
-                        onClick = { onAddToCart(product) },
+                        onClick = { onAddToCart(product, selectedOptions.toMap()) },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        enabled = !isOutOfStock
                     ) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                        Icon(Icons.Default.ShoppingCart, contentDescription = "Shopping Cart")
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Add to Cart")
+                        Text(if (isOutOfStock) "Out of Stock" else "Add to Cart")
                     }
                 }
             }
@@ -145,7 +182,11 @@ fun ProductDetailsContent(
                     )
                 }
                 uiState.product != null -> {
-                    ProductDetailsBody(product = uiState.product)
+                    ProductDetailsBody(
+                        product = uiState.product,
+                        selectedOptions = selectedOptions,
+                        onOptionSelected = { key, value -> selectedOptions[key] = value }
+                    )
                 }
             }
         }
@@ -156,7 +197,11 @@ fun ProductDetailsContent(
  * Scrollable body containing detailed information about the product.
  */
 @Composable
-private fun ProductDetailsBody(product: Product) {
+private fun ProductDetailsBody(
+    product: Product,
+    selectedOptions: Map<String, String>,
+    onOptionSelected: (String, String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -167,17 +212,24 @@ private fun ProductDetailsBody(product: Product) {
             images = product.images,
             contentDescription = product.title
         )
-
         Column(
             modifier = Modifier
                 .padding(20.dp)
         ) {
             // Category Badge
-            Text(
-                text = product.category,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = product.category,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                
+                StockStatusBadge(stockCount = product.stockCount)
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -213,9 +265,27 @@ private fun ProductDetailsBody(product: Product) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Dynamic Selectable Options (Size, Color, etc.)
+            if (product.selectableOptions.isNotEmpty()) {
+                SelectableOptionsSection(
+                    options = product.selectableOptions,
+                    selectedOptions = selectedOptions,
+                    onOptionSelected = onOptionSelected
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
             HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, thickness = 1.dp)
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            // Technical Specifications Section
+            if (product.specifications.isNotEmpty()) {
+                SpecificationsSection(specifications = product.specifications)
+                Spacer(modifier = Modifier.height(24.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
             // Description Section
             Text(
@@ -235,6 +305,141 @@ private fun ProductDetailsBody(product: Product) {
 
             // Extra padding to ensure content isn't hidden by the BottomAppBar
             Spacer(modifier = Modifier.height(100.dp))
+        }
+    }
+}
+
+/**
+ * A stunning section for selectable options like shoe size or shirt size.
+ */
+@Composable
+private fun StockStatusBadge(stockCount: Int) {
+    val (text, containerColor, contentColor) = when {
+        stockCount <= 0 -> Triple("Out of Stock", MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer)
+        stockCount < 5 -> Triple("Only $stockCount left!", MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
+        else -> Triple("In Stock", Color(0xFFE8F5E9), Color(0xFF2E7D32)) // Soft green for healthy stock
+    }
+
+    Surface(
+        color = containerColor,
+        contentColor = contentColor,
+        shape = CircleShape,
+        modifier = Modifier.padding(vertical = 4.dp)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+        )
+    }
+}
+
+/**
+ * A stunning section for selectable options like shoe size or shirt size.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SelectableOptionsSection(
+    options: Map<String, List<String>>,
+    selectedOptions: Map<String, String>,
+    onOptionSelected: (String, String) -> Unit
+) {
+    Column {
+        options.forEach { (optionName, values) ->
+            Text(
+                text = "Select $optionName",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                values.forEach { value ->
+                    val isSelected = selectedOptions[optionName] == value
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(
+                                if (isSelected) MaterialTheme.colorScheme.primary 
+                                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary 
+                                        else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .clickable { onOptionSelected(optionName, value) }
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = value,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary 
+                                    else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+    }
+}
+
+/**
+ * A clean, grid-like section for technical specifications.
+ */
+@Composable
+private fun SpecificationsSection(specifications: Map<String, String>) {
+    Column {
+        Text(
+            text = "Specifications",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                specifications.entries.forEachIndexed { index, entry ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = entry.key,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = entry.value,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    if (index < specifications.size - 1) {
+                        HorizontalDivider(
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
+                            thickness = 1.dp
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -319,7 +524,17 @@ fun ProductDetailsPreview() {
             "https://example.com/watch1.jpg",
             "https://example.com/watch2.jpg",
             "https://example.com/watch3.jpg"
-        )
+        ),
+        selectableOptions = mapOf(
+            "Size" to listOf("S", "M", "L", "XL"),
+            "Color" to listOf("Black", "Brown", "Blue")
+        ),
+        specifications = mapOf(
+            "Material" to "Genuine Leather",
+            "Water Resistance" to "50m",
+            "Warranty" to "2 Years"
+        ),
+        stockCount = 3
     )
     val mockUiState = ProductDetailsUiState(product = mockProduct)
     

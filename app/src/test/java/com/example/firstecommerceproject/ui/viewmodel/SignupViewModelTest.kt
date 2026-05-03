@@ -41,7 +41,8 @@ class SignupViewModelTest {
             login = loginUseCase,
             signup = signupUseCase,
             logout = logoutUseCase,
-            getCurrentUser = getCurrentUserUseCase
+            getCurrentUser = getCurrentUserUseCase,
+            getName = mockk()
         )
         viewModel = SignupViewModel(authUseCases)
     }
@@ -52,10 +53,17 @@ class SignupViewModelTest {
     }
 
     @Test
-    fun `onUsernameChange updates state`() = runTest {
-        val newUsername = "testuser"
-        viewModel.onUsernameChange(newUsername)
-        assertEquals(newUsername, viewModel.signupUiState.value.username)
+    fun `onFirstNameChange updates state`() = runTest {
+        val newName = "John"
+        viewModel.onFirstNameChange(newName)
+        assertEquals(newName, viewModel.signupUiState.value.firstName)
+    }
+
+    @Test
+    fun `onLastNameChange updates state`() = runTest {
+        val newName = "Doe"
+        viewModel.onLastNameChange(newName)
+        assertEquals(newName, viewModel.signupUiState.value.lastName)
     }
 
     @Test
@@ -81,16 +89,22 @@ class SignupViewModelTest {
 
     @Test
     fun `onSignupClick success updates state correctly`() = runTest {
-        val username = "testuser"
+        val firstName = "John"
+        val lastName = "Doe"
         val email = "test@example.com"
+        val phone = "1234567890"
         val password = "password"
+        val confirmPassword = "password"
         val mockUser: FirebaseUser = mockk()
 
-        coEvery { signupUseCase(username, email, password) } returns Result.success(mockUser)
+        coEvery { signupUseCase(firstName, lastName, email, phone, password, confirmPassword) } returns Result.success(mockUser)
 
-        viewModel.onUsernameChange(username)
+        viewModel.onFirstNameChange(firstName)
+        viewModel.onLastNameChange(lastName)
         viewModel.onEmailChange(email)
+        viewModel.onMobileChange(phone)
         viewModel.onPasswordChange(password)
+        viewModel.onConfirmPasswordChange(confirmPassword)
 
         viewModel.signupUiState.test {
             val initialState = awaitItem()
@@ -109,20 +123,26 @@ class SignupViewModelTest {
 
     @Test
     fun `onSignupClick failure updates state with error`() = runTest {
-        val username = "testuser"
+        val firstName = "John"
+        val lastName = "Doe"
         val email = "test@example.com"
+        val phone = "1234567890"
         val password = "password"
+        val confirmPassword = "password"
         val errorMessage = "Email already in use"
 
-        coEvery { signupUseCase(username, email, password) } returns Result.failure(
+        coEvery { signupUseCase(firstName, lastName, email, phone, password, confirmPassword) } returns Result.failure(
             Exception(
                 errorMessage
             )
         )
 
-        viewModel.onUsernameChange(username)
+        viewModel.onFirstNameChange(firstName)
+        viewModel.onLastNameChange(lastName)
         viewModel.onEmailChange(email)
+        viewModel.onMobileChange(phone)
         viewModel.onPasswordChange(password)
+        viewModel.onConfirmPasswordChange(confirmPassword)
 
         viewModel.signupUiState.test {
             awaitItem() // initial

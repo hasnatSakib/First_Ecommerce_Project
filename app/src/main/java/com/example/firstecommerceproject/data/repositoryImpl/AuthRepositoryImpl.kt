@@ -2,6 +2,7 @@ package com.example.firstecommerceproject.data.repositoryImpl
 
 import com.example.firstecommerceproject.data.remote.api.FirebaseAuthService
 import com.example.firstecommerceproject.domain.repository.AuthRepository
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import javax.inject.Inject
@@ -29,18 +30,23 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun signup(
-        name: String,
+        firstName: String,
+        lastName: String,
         email: String,
+        phone: String,
         password: String
     ): Result<FirebaseUser> {
         return try {
             val user = firebaseAuthService.signUp(email, password)
             if (user != null) {
                 val userData = mapOf(
-                    "uid" to user.uid,
-                    "name" to name,
+                    "firstName" to firstName,
+                    "lastName" to lastName,
+                    "fullName" to "$firstName $lastName",
                     "email" to email,
-                    "createdAt" to System.currentTimeMillis()
+                    "phone" to phone,
+                    "createdAt" to Timestamp.now(),
+                    "fcmToken" to "" 
                 )
                 firebaseAuthService.saveUserData(user.uid, userData)
                 Result.success(user)
@@ -49,6 +55,15 @@ class AuthRepositoryImpl @Inject constructor(
             }
         } catch (e: FirebaseAuthUserCollisionException) {
             Result.failure(Exception("This email address is already in use by another account."))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun sendEmailVerification(): Result<Unit> {
+        return try {
+            firebaseAuthService.sendEmailVerification()
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -68,10 +83,11 @@ class AuthRepositoryImpl @Inject constructor(
     override fun isUserLoggedIn(): Boolean {
         return firebaseAuthService.currentUser != null
     }
+
     override suspend fun getName(): Result<String?> {
         return try {
             val document = firebaseAuthService.getName()
-            val name = document?.getString("name")
+            val name = document?.getString("fullName")
             Result.success(name)
         } catch (e: Exception) {
             Result.failure(e)
