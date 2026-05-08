@@ -100,6 +100,11 @@ fun AppNavigation(
                 },
                 onSeeAllClick = {
                     navController.navigate(Routes.AllCategoriesScreen.route)
+                },
+                onLogoutSuccess = {
+                    navController.navigate(Routes.AuthScreen.route) {
+                        popUpTo(Routes.LandingScreen.route) { inclusive = true }
+                    }
                 }
             )
         }

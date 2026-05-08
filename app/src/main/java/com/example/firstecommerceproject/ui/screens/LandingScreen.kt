@@ -23,8 +23,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.firstecommerceproject.domain.models.NavItem
 import com.example.firstecommerceproject.ui.viewmodel.HomeViewModel
+import com.example.firstecommerceproject.ui.viewmodel.ProfileViewModel
 
 /**
  * Main application container screen that hosts the bottom navigation and top-level screens.
@@ -37,13 +39,15 @@ import com.example.firstecommerceproject.ui.viewmodel.HomeViewModel
  * @param homeViewModel ViewModel providing data for the Home screen component.
  * @param onCategoryClick Callback triggered when a category is selected in the Home screen.
  * @param onSeeAllClick Callback when "See All" categories is clicked in the Home screen.
+ * @param onLogoutSuccess Callback when the user is logged out.
  */
 @Composable
 fun LandingScreen(
     modifier: Modifier,
     homeViewModel: HomeViewModel,
     onCategoryClick: (String) -> Unit,
-    onSeeAllClick: () -> Unit
+    onSeeAllClick: () -> Unit,
+    onLogoutSuccess: () -> Unit
 ) {
     // List of top-level destinations for the bottom navigation bar
     val navItemList = listOf(
@@ -94,7 +98,8 @@ fun LandingScreen(
                     homeViewModel = homeViewModel,
                     selectedIndex = selectedIndex,
                     onCategoryClick = onCategoryClick,
-                    onSeeAllClick = onSeeAllClick
+                    onSeeAllClick = onSeeAllClick,
+                    onLogoutSuccess = onLogoutSuccess
                 )
             }
         }
@@ -109,6 +114,7 @@ fun LandingScreen(
  * @param selectedIndex The index of the currently active bottom navigation item.
  * @param onCategoryClick Callback for category navigation events.
  * @param onSeeAllClick Callback for "See All" categories navigation.
+ * @param onLogoutSuccess Callback when the user is logged out.
  */
 @Composable
 fun ContentScreen(
@@ -116,7 +122,8 @@ fun ContentScreen(
     homeViewModel: HomeViewModel,
     selectedIndex: Int,
     onCategoryClick: (String) -> Unit,
-    onSeeAllClick: () -> Unit
+    onSeeAllClick: () -> Unit,
+    onLogoutSuccess: () -> Unit
 ) {
     when (selectedIndex) {
         0 -> HomeScreen(
@@ -127,7 +134,14 @@ fun ContentScreen(
         )
         1 -> FavoritesScreen(modifier)
         2 -> CartScreen(modifier)
-        3 -> ProfileScreen(modifier)
+        3 -> {
+            val profileViewModel: ProfileViewModel = hiltViewModel()
+            ProfileScreen(
+                modifier = modifier,
+                viewModel = profileViewModel,
+                onLogoutSuccess = onLogoutSuccess
+            )
+        }
     }
 }
 

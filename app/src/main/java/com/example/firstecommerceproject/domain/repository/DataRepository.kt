@@ -2,6 +2,7 @@ package com.example.firstecommerceproject.domain.repository
 
 import com.example.firstecommerceproject.domain.models.Category
 import com.example.firstecommerceproject.domain.models.Product
+import com.example.firstecommerceproject.domain.models.ProductVariant
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -38,6 +39,13 @@ interface DataRepository {
     suspend fun getProductsByCategory(category: String): Result<List<Product>?>
 
     /**
+     * Retrieves details for a specific product by its ID and its variants if it has any.
+     * @param productId The unique identifier for the product.
+     * @return A [Result] containing a Pair of [Product] and a list of its [ProductVariant]s.
+     */
+    suspend fun getProductWithVariants(productId: String): Result<Pair<Product?, List<ProductVariant>>>
+
+    /**
      * Retrieves details for a specific product by its ID.
      * @param productId The unique identifier for the product.
      * @return A [Result] containing the [Product] details or an error.
@@ -50,4 +58,11 @@ interface DataRepository {
      * @return A [Flow] emitting [Result]s containing the [Product] details.
      */
     fun observeProductById(productId: String): Flow<Result<Product?>>
+
+    /**
+     * Retrieves all available variants for a specific product.
+     * @param productId The ID of the parent product.
+     * @return A [Result] containing a list of [ProductVariant]s or an error.
+     */
+    suspend fun getProductVariants(productId: String): Result<List<ProductVariant>?>
 }

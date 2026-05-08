@@ -53,8 +53,8 @@ fun ProductItemView(
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .clip(MaterialTheme.shapes.large),
-                model = product.images.firstOrNull(),
-                contentDescription = product.title,
+                model = product.thumbnailUrl,
+                contentDescription = product.name,
                 contentScale = ContentScale.Crop
             )
             
@@ -63,27 +63,27 @@ fun ProductItemView(
                     .padding(horizontal = 12.dp, vertical = 8.dp)
                     .fillMaxWidth()
             ) {
-                // Product Title (Truncated if too long)
+                // Product Name (Truncated if too long)
                 Text(
-                    text = product.title,
+                    text = product.name,
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 
-                // Active Selling Price
+                // Discount Price
                 Text(
-                    text = "Rs. ${product.offerPrice}",
+                    text = "Rs. ${product.discountPrice}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
                 
-                // Original Price (Strikethrough) - only shown if different from offer price
-                if (product.originalPrice.isNotBlank() && product.originalPrice != product.offerPrice) {
+                // Original Price (Strikethrough) - only shown if different from discount price
+                if (product.price != product.discountPrice) {
                     Text(
-                        text = "Rs. ${product.originalPrice}",
+                        text = "Rs. ${product.price}",
                         style = MaterialTheme.typography.bodySmall.copy(
                             textDecoration = TextDecoration.LineThrough
                         ),

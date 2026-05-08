@@ -80,4 +80,15 @@ class FirebaseAuthService @Inject constructor(
     suspend fun getName(): DocumentSnapshot? {
         return getUserProfile()
     }
+
+    /**
+     * Deletes the currently authenticated user's account and their profile data from Firestore.
+     */
+    suspend fun deleteAccount() {
+        val uid = auth.currentUser?.uid
+        auth.currentUser?.delete()?.await()
+        if (uid != null) {
+            firestore.collection("users").document(uid).delete().await()
+        }
+    }
 }

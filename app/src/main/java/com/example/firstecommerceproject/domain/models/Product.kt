@@ -1,32 +1,23 @@
 package com.example.firstecommerceproject.domain.models
 
-import com.google.firebase.firestore.PropertyName
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 
 /**
- * Data model representing a product in the store.
- *
- * @property id Unique identifier for the product.
- * @property title The name of the product.
- * @property description Detailed description of the product.
- * @property originalPrice Price before any discounts.
- * @property offerPrice Price after applying discounts.
- * @property category The category name or ID the product belongs to.
- * @property images List of URLs for product images.
- * @property specifications Static technical details (e.g., "Material" -> "Cotton").
- * @property selectableOptions User-selectable variants (e.g., "Size" -> ["S", "M", "L"]).
- * @property stockCount Remaining inventory amount for this product.
+ * Data model representing a product in the store according to the updated schema.
  */
 data class Product(
+    @DocumentId
     val id: String = "",
-    val title: String = "",
+    val name: String = "",
+    val brand: String = "",
+    val sku: String = "",
     val description: String = "",
-    val originalPrice: String = "",
-    val offerPrice: String = "",
-    val category: String = "",
-    val images: List<String> = emptyList(),
-    val specifications: Map<String, String> = emptyMap(),
-    val selectableOptions: Map<String, List<String>> = emptyMap(),
-    @get:PropertyName("stockCounts")
-    @set:PropertyName("stockCounts")
-    var stockCount: Int = 0
+    val thumbnailUrl: String = "",
+    val price: Double = 0.0,
+    val discountPrice: Double = 0.0,
+    val hasVariants: Boolean = false,
+    val createdAt: Timestamp? = null,
+    val category: List<String> = emptyList(),
+    val specifications: Map<String, String> = emptyMap()
 )

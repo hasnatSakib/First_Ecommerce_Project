@@ -3,6 +3,7 @@ package com.example.firstecommerceproject.data.repositoryImpl
 import com.example.firstecommerceproject.data.remote.api.FirebaseDataService
 import com.example.firstecommerceproject.domain.models.Category
 import com.example.firstecommerceproject.domain.models.Product
+import com.example.firstecommerceproject.domain.models.ProductVariant
 import com.example.firstecommerceproject.domain.repository.DataRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -76,9 +77,9 @@ class DataRepositoryImpl @Inject constructor(
     /**
      * Fetches products by category and handles empty result scenarios.
      */
-    override suspend fun getProductsByCategory(categoryId: String): Result<List<Product>?> {
+    override suspend fun getProductsByCategory(category: String): Result<List<Product>?> {
         return try {
-            val snapshot = firebaseDataService.getProductsByCategory(categoryId)
+            val snapshot = firebaseDataService.getProductsByCategory(category)
             val resultList = snapshot?.documents?.mapNotNull { product ->
                 product.toObject(Product::class.java)
             }
@@ -87,6 +88,27 @@ class DataRepositoryImpl @Inject constructor(
             } else {
                 Result.failure(Exception("No products found for this category"))
             }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Fetches a specific product by ID and its variants if it has them.
+     */
+    override suspend fun getProductWithVariants(productId: String): Result<Pair<Product?, List<ProductVariant>>> {
+        return try {
+            val productSnapshot = firebaseDataService.getProductById(productId)
+            val product = productSnapshot?.toObject(Product::class.java)
+            
+            val variants = if (product?.hasVariants == true) {
+                val variantsSnapshot = firebaseDataService.getProductVariants(productId)
+                variantsSnapshot?.documents?.mapNotNull { it.toObject(ProductVariant::class.java) } ?: emptyList()
+            } else {
+                emptyList()
+            }
+            
+            Result.success(Pair(product, variants))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -125,5 +147,20 @@ class DataRepositoryImpl @Inject constructor(
             .catch { e ->
                 emit(Result.failure(e))
             }
+    }
+
+    /**
+     * Retrieves all available variants for a specific product.
+     */
+    override suspend fun getProductVariants(productId: String): Result<List<ProductVariant>?> {
+        return try {
+            val snapshot = firebaseDataService.getProductVariants(productId)
+            val variants = snapshot?.documents?.mapNotNull { doc ->
+                doc.toObject(ProductVariant::class.java)
+            }
+            Result.success(variants)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

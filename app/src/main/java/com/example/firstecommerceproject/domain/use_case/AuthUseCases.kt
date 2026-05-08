@@ -5,6 +5,7 @@ import com.example.firstecommerceproject.domain.use_case.auth.LoginUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.LogoutUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.SignupUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.GetNameUseCase
+import com.example.firstecommerceproject.domain.use_case.auth.DeleteAccountUseCase
 
 data class AuthUseCases(
     val login: LoginUseCase,
@@ -12,4 +13,5 @@ data class AuthUseCases(
     val logout: LogoutUseCase,
     val getCurrentUser: GetCurrentUserUseCase,
     val getName: GetNameUseCase,
+    val deleteAccount: DeleteAccountUseCase
 )

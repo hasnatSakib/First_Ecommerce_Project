@@ -80,6 +80,15 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteAccount(): Result<Boolean> {
+        return try {
+            firebaseAuthService.deleteAccount()
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override fun isUserLoggedIn(): Boolean {
         return firebaseAuthService.currentUser != null
     }

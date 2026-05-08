@@ -48,7 +48,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -82,7 +81,7 @@ fun ProductDetailsPage(
     onBackClick: () -> Unit
 ) {
     // Lifecycle-aware observation of UI state
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val productDetailsUiState by viewModel.productDetailsUiState.collectAsStateWithLifecycle()
 
     // Trigger data fetch when the productId changes or on initial launch
     LaunchedEffect(productId) {
@@ -91,7 +90,7 @@ fun ProductDetailsPage(
 
     ProductDetailsContent(
         modifier = modifier,
-        uiState = uiState,
+        productDetailsUiState = productDetailsUiState,
         onBackClick = onBackClick,
         onAddToCart = { _, _ -> 
             /* TODO: Implement add to cart logic */
@@ -113,7 +112,7 @@ fun ProductDetailsPage(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailsContent(
-    uiState: ProductDetailsUiState,
+    productDetailsUiState: ProductDetailsUiState,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onAddToCart: (Product, Map<String, String>) -> Unit = { _, _ -> }
@@ -145,8 +144,7 @@ fun ProductDetailsContent(
         },
         bottomBar = {
             // Show bottom bar only when product data is successfully loaded
-            uiState.product?.let { product ->
-                val isOutOfStock = product.stockCount <= 0
+            productDetailsUiState.product?.let { product ->
                 BottomAppBar(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentPadding = PaddingValues(16.dp)
@@ -154,12 +152,11 @@ fun ProductDetailsContent(
                     Button(
                         onClick = { onAddToCart(product, selectedOptions.toMap()) },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        enabled = !isOutOfStock
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Icon(Icons.Default.ShoppingCart, contentDescription = "Shopping Cart")
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (isOutOfStock) "Out of Stock" else "Add to Cart")
+                        Text("Add to Cart")
                     }
                 }
             }
@@ -171,19 +168,19 @@ fun ProductDetailsContent(
                 .padding(innerPadding)
         ) {
             when {
-                uiState.isLoading -> {
+                productDetailsUiState.isLoading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-                uiState.errorMessage != null -> {
+                productDetailsUiState.errorMessage != null -> {
                     Text(
-                        text = uiState.errorMessage,
+                        text = productDetailsUiState.errorMessage,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
-                uiState.product != null -> {
+                productDetailsUiState.product != null -> {
                     ProductDetailsBody(
-                        product = uiState.product,
+                        product = productDetailsUiState.product,
                         selectedOptions = selectedOptions,
                         onOptionSelected = { key, value -> selectedOptions[key] = value }
                     )
@@ -207,35 +204,60 @@ private fun ProductDetailsBody(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        // Hero Image Gallery
-        ProductImageGallery(
-            images = product.images,
-            contentDescription = product.title
+        // Product Thumbnail
+        AsyncImage(
+            model = product.thumbnailUrl,
+            contentDescription = product.name,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
+            contentScale = ContentScale.Fit
         )
+        
         Column(
             modifier = Modifier
                 .padding(20.dp)
         ) {
-            // Category Badge
+            // Brand & SKU Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = product.category,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Column {
+                    Text(
+                        text = product.brand,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "SKU: ${product.sku}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 
-                StockStatusBadge(stockCount = product.stockCount)
+                // Show category badge if available
+                if (product.category.isNotEmpty()) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        shape = CircleShape
+                    ) {
+                        Text(
+                            text = product.category.first(),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Main Title
+            // Main Name
             Text(
-                text = product.title,
+                text = product.name,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -245,16 +267,16 @@ private fun ProductDetailsBody(
             // Pricing Row
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "Rs. ${product.offerPrice}",
+                    text = "Rs. ${product.discountPrice}",
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
 
-                if (product.originalPrice.isNotBlank() && product.originalPrice != product.offerPrice) {
+                if (product.price != product.discountPrice) {
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Rs. ${product.originalPrice}",
+                        text = "Rs. ${product.price}",
                         style = MaterialTheme.typography.titleMedium.copy(
                             textDecoration = TextDecoration.LineThrough
                         ),
@@ -264,16 +286,6 @@ private fun ProductDetailsBody(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            // Dynamic Selectable Options (Size, Color, etc.)
-            if (product.selectableOptions.isNotEmpty()) {
-                SelectableOptionsSection(
-                    options = product.selectableOptions,
-                    selectedOptions = selectedOptions,
-                    onOptionSelected = onOptionSelected
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-            }
 
             HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, thickness = 1.dp)
 
@@ -306,32 +318,6 @@ private fun ProductDetailsBody(
             // Extra padding to ensure content isn't hidden by the BottomAppBar
             Spacer(modifier = Modifier.height(100.dp))
         }
-    }
-}
-
-/**
- * A stunning section for selectable options like shoe size or shirt size.
- */
-@Composable
-private fun StockStatusBadge(stockCount: Int) {
-    val (text, containerColor, contentColor) = when {
-        stockCount <= 0 -> Triple("Out of Stock", MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer)
-        stockCount < 5 -> Triple("Only $stockCount left!", MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
-        else -> Triple("In Stock", Color(0xFFE8F5E9), Color(0xFF2E7D32)) // Soft green for healthy stock
-    }
-
-    Surface(
-        color = containerColor,
-        contentColor = contentColor,
-        shape = CircleShape,
-        modifier = Modifier.padding(vertical = 4.dp)
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-        )
     }
 }
 
@@ -515,30 +501,25 @@ private fun ProductImageGallery(
 fun ProductDetailsPreview() {
     val mockProduct = Product(
         id = "1",
-        title = "Premium Leather Watch",
-        description = "This elegant leather watch is perfect for any occasion. It features a genuine leather strap and a stainless steel case with water resistance up to 50 meters.",
-        offerPrice = "4500",
-        originalPrice = "6000",
-        category = "Accessories",
-        images = listOf(
-            "https://example.com/watch1.jpg",
-            "https://example.com/watch2.jpg",
-            "https://example.com/watch3.jpg"
-        ),
-        selectableOptions = mapOf(
-            "Size" to listOf("S", "M", "L", "XL"),
-            "Color" to listOf("Black", "Brown", "Blue")
-        ),
+        name = "Sony WH-1000XM5 Wireless Headphones",
+        brand = "Sony",
+        sku = "SNY-XM5-BASE",
+        description = "Industry-leading noise cancellation with two processors and 8 microphones. Enjoy crystal clear hands-free calling and up to 30 hours of battery life.",
+        price = 399.99,
+        discountPrice = 348.0,
+        category = listOf("electronics", "audio", "headphones"),
+        thumbnailUrl = "https://example.com/sony_xm5.jpg",
+        hasVariants = true,
         specifications = mapOf(
-            "Material" to "Genuine Leather",
-            "Water Resistance" to "50m",
-            "Warranty" to "2 Years"
-        ),
-        stockCount = 3
+            "Battery Life" to "30 Hours",
+            "Bluetooth" to "Version 5.2",
+            "Drivers" to "30mm Precision Engineered",
+            "Weight" to "250g"
+        )
     )
     val mockUiState = ProductDetailsUiState(product = mockProduct)
     
     FirstEcommerceProjectTheme {
-        ProductDetailsContent(uiState = mockUiState)
+        ProductDetailsContent(productDetailsUiState = mockUiState)
     }
 }

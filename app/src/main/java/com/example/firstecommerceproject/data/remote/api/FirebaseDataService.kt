@@ -32,15 +32,16 @@ class FirebaseDataService @Inject constructor(
     val currentUser: FirebaseUser? get() = auth.currentUser
 
     /**
-     * Fetches promotional banners from the "data/banners" document.
+     * Fetches promotional banners from the "promotions/banners" document.
      *
      * @return A [DocumentSnapshot] containing banner data, or null if not found.
      */
     suspend fun getBanners(): DocumentSnapshot? {
         return firestore.collection("promotions").document("banners").get().await()
     }
+
     /**
-     * Fetches all product categories from the "data/stock/categories" collection.
+     * Fetches all product categories from the "categories" collection.
      *
      * @return A [QuerySnapshot] containing all category documents.
      */
@@ -49,12 +50,12 @@ class FirebaseDataService @Inject constructor(
     }
 
     /**
-     * Fetches all products from the "data/stock/products" collection.
+     * Fetches all products from the "products" collection.
      *
      * @return A [QuerySnapshot] containing all product documents.
      */
     suspend fun getProducts(): QuerySnapshot? {
-        return firestore.collection("data").document("stock").collection("products").get().await()
+        return firestore.collection("products").get().await()
     }
 
     /**
@@ -64,25 +65,35 @@ class FirebaseDataService @Inject constructor(
      * @return A [QuerySnapshot] containing products matching the category.
      */
     suspend fun getProductsByCategory(categoryName: String): QuerySnapshot? {
-        return firestore.collection("data")
-            .document("stock")
-            .collection("products")
-            .whereEqualTo("category", categoryName)
+        return firestore.collection("products")
+            .whereArrayContains("category", categoryName)
             .get()
             .await()
     }
 
     /**
-     * Fetches a single product by its unique ID.
+     * Fetches a single product by its unique ID from the root "products" collection.
      *
      * @param productId The ID of the product to retrieve.
      * @return A [DocumentSnapshot] for the specified product ID.
      */
     suspend fun getProductById(productId: String): DocumentSnapshot? {
-        return firestore.collection("data")
-            .document("stock")
-            .collection("products")
+        return firestore.collection("products")
             .document(productId)
+            .get()
+            .await()
+    }
+
+    /**
+     * Fetches all variants for a specific product.
+     *
+     * @param productId The ID of the parent product.
+     * @return A [QuerySnapshot] containing variant documents.
+     */
+    suspend fun getProductVariants(productId: String): QuerySnapshot? {
+        return firestore.collection("products")
+            .document(productId)
+            .collection("variants")
             .get()
             .await()
     }
@@ -94,9 +105,7 @@ class FirebaseDataService @Inject constructor(
      * @return A [Flow] of [DocumentSnapshot] updates.
      */
     fun observeProductById(productId: String): Flow<DocumentSnapshot?> = callbackFlow {
-        val subscription = firestore.collection("data")
-            .document("stock")
-            .collection("products")
+        val subscription = firestore.collection("products")
             .document(productId)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {

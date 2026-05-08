@@ -15,7 +15,10 @@ import com.example.firstecommerceproject.domain.use_case.auth.SignupUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetBannersUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetCategoryUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.GetNameUseCase
+import com.example.firstecommerceproject.domain.use_case.auth.DeleteAccountUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetProductByIdUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetProductVariantsUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetProductWithVariantsUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetProductsByCategoryUseCase
 import com.example.firstecommerceproject.domain.use_case.data.ObserveProductByIdUseCase
 import com.google.firebase.Firebase
@@ -61,7 +64,8 @@ object AppModule {
             signup = SignupUseCase(repository),
             logout = LogoutUseCase(repository),
             getCurrentUser = GetCurrentUserUseCase(repository),
-            getName = GetNameUseCase(repository)
+            getName = GetNameUseCase(repository),
+            deleteAccount = DeleteAccountUseCase(repository)
         )
     }
 
@@ -73,7 +77,9 @@ object AppModule {
             getCategories = GetCategoryUseCase(dataRepository),
             getProductsByCategory = GetProductsByCategoryUseCase(dataRepository),
             getProductById = GetProductByIdUseCase(dataRepository),
-            observeProductById = ObserveProductByIdUseCase(dataRepository)
+            observeProductById = ObserveProductByIdUseCase(dataRepository),
+            getProductVariants = GetProductVariantsUseCase(dataRepository),
+            getProductWithVariants = GetProductWithVariantsUseCase(dataRepository)
         )
     }
 }
