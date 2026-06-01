@@ -49,6 +49,7 @@ class HomeViewModel @Inject constructor(
             val nameResult = authUseCases.getName()
             val bannersResult = dataUseCases.getBanners()
             val categoriesResult = dataUseCases.getCategories()
+            val productsResult = dataUseCases.getProducts()
 
             _homeUiState.update { state ->
                 state.copy(
@@ -56,9 +57,11 @@ class HomeViewModel @Inject constructor(
                     name = nameResult.getOrNull(),
                     banners = bannersResult.getOrNull() ?: emptyList(),
                     categories = categoriesResult.getOrNull() ?: emptyList(),
+                    products = productsResult.getOrNull() ?: emptyList(),
                     errorMessage = (nameResult.exceptionOrNull()
                         ?: bannersResult.exceptionOrNull()
-                        ?: categoriesResult.exceptionOrNull())?.message
+                        ?: categoriesResult.exceptionOrNull()
+                        ?: productsResult.exceptionOrNull())?.message
                 )
             }
         }

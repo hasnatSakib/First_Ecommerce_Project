@@ -47,6 +47,8 @@ fun LandingScreen(
     homeViewModel: HomeViewModel,
     onCategoryClick: (String) -> Unit,
     onSeeAllClick: () -> Unit,
+    onProductSeeAllClick: () -> Unit,
+    onProductClick: (String) -> Unit,
     onLogoutSuccess: () -> Unit
 ) {
     // List of top-level destinations for the bottom navigation bar
@@ -99,6 +101,8 @@ fun LandingScreen(
                     selectedIndex = selectedIndex,
                     onCategoryClick = onCategoryClick,
                     onSeeAllClick = onSeeAllClick,
+                    onProductSeeAllClick = onProductSeeAllClick,
+                    onProductClick = onProductClick,
                     onLogoutSuccess = onLogoutSuccess
                 )
             }
@@ -114,6 +118,8 @@ fun LandingScreen(
  * @param selectedIndex The index of the currently active bottom navigation item.
  * @param onCategoryClick Callback for category navigation events.
  * @param onSeeAllClick Callback for "See All" categories navigation.
+ * @param onProductSeeAllClick Callback for "See All" products navigation.
+ * @param onProductClick Callback for product clicks.
  * @param onLogoutSuccess Callback when the user is logged out.
  */
 @Composable
@@ -123,6 +129,8 @@ fun ContentScreen(
     selectedIndex: Int,
     onCategoryClick: (String) -> Unit,
     onSeeAllClick: () -> Unit,
+    onProductSeeAllClick: () -> Unit,
+    onProductClick: (String) -> Unit,
     onLogoutSuccess: () -> Unit
 ) {
     when (selectedIndex) {
@@ -130,7 +138,9 @@ fun ContentScreen(
             modifier = modifier,
             homeViewModel = homeViewModel,
             onCategoryClick = onCategoryClick,
-            onSeeAllClick = onSeeAllClick
+            onSeeAllClick = onSeeAllClick,
+            onProductSeeAllClick = onProductSeeAllClick,
+            onProductClick = onProductClick
         )
         1 -> FavoritesScreen(modifier)
         2 -> CartScreen(modifier)

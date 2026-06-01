@@ -1,6 +1,7 @@
 package com.example.firstecommerceproject.ui.states
 
 import com.example.firstecommerceproject.domain.models.Category
+import com.example.firstecommerceproject.domain.models.Product
 
 /**
  * Represents the UI state for the Home screen.
@@ -11,6 +12,7 @@ import com.example.firstecommerceproject.domain.models.Category
  * @property name The display name of the logged-in user, if available.
  * @property banners A list of URLs for the promotional banners displayed at the top.
  * @property categories A list of product categories fetched from the backend.
+ * @property products A list of all products fetched from the backend.
  * @property isLoading Indicates if a data fetch operation is currently in progress.
  * @property errorMessage Contains a descriptive error message if a data fetch fails.
  */
@@ -18,6 +20,7 @@ data class HomeUiState(
     val name: String? = null,
     val banners: List<String> = emptyList(),
     val categories: List<Category> = emptyList(),
+    val products: List<Product> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

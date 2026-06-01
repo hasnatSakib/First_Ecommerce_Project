@@ -20,6 +20,7 @@ import com.example.firstecommerceproject.domain.use_case.data.GetProductByIdUseC
 import com.example.firstecommerceproject.domain.use_case.data.GetProductVariantsUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetProductWithVariantsUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetProductsByCategoryUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetProductsUseCase
 import com.example.firstecommerceproject.domain.use_case.data.ObserveProductByIdUseCase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -79,7 +80,8 @@ object AppModule {
             getProductById = GetProductByIdUseCase(dataRepository),
             observeProductById = ObserveProductByIdUseCase(dataRepository),
             getProductVariants = GetProductVariantsUseCase(dataRepository),
-            getProductWithVariants = GetProductWithVariantsUseCase(dataRepository)
+            getProductWithVariants = GetProductWithVariantsUseCase(dataRepository),
+            getProducts = GetProductsUseCase(dataRepository)
         )
     }
 }

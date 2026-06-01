@@ -8,10 +8,11 @@ import com.google.firebase.firestore.DocumentId
 data class ProductVariant(
     @DocumentId
     val id: String = "",
-    val name: String = "",
+    val variantName: String = "",
     val sku: String = "",
     val price: Double = 0.0,
-    val discountPrice: Double = 0.0,
-    val stockCount: Int = 0,
-    val attributes: Map<String, String> = emptyMap()
+    val stockQuantity: Int = 0,
+    val combination: Map<String, String> = emptyMap(),
+    val imageUrl: String? = null,
+    val variantImageUrls: List<String> = emptyList()
 )

@@ -26,6 +26,9 @@ sealed class Routes(
     /** Route for displaying all product categories. */
     data object AllCategoriesScreen : Routes("allCategoriesScreen")
 
+    /** Route for displaying all products. */
+    data object AllProductsScreen : Routes("allProductsScreen")
+
     /**
      * Route for displaying products belonging to a specific category.
      *

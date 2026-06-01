@@ -13,34 +13,16 @@ import javax.inject.Inject
 
 /**
  * ViewModel for the Product Details screen.
- *
- * This ViewModel handles the logic for observing specific product details from the
- * data layer and exposing them as a lifecycle-aware [ProductDetailsUiState] flow.
- *
- * @property dataUseCases The entry point to domain layer logic.
  */
 @HiltViewModel
 class ProductDetailsViewModel @Inject constructor(
     private val dataUseCases: DataUseCases
 ) : ViewModel() {
 
-    // Internal state flow for UI updates
     private val _productDetailsUiState = MutableStateFlow(ProductDetailsUiState())
-    
-    /**
-     * Publicly exposed UI state that can be observed by the view.
-     */
     val productDetailsUiState = _productDetailsUiState.asStateFlow()
 
-    /**
-     * Starts observing detailed information for a product by its [productId].
-     *
-     * Updates [productDetailsUiState] to reflect loading, success, or error states in real-time.
-     *
-     * @param productId The ID of the product to fetch.
-     */
     fun getProductDetails(productId: String) {
-        // Reset state to loading before starting the fetch
         _productDetailsUiState.update { it.copy(isLoading = true, errorMessage = null) }
         
         viewModelScope.launch {
@@ -52,7 +34,9 @@ class ProductDetailsViewModel @Inject constructor(
                     it.copy(
                         product = product,
                         variants = variants,
-                        isLoading = false
+                        isLoading = false,
+                        selectedAttributes = emptyMap(),
+                        selectedVariant = null
                     ) 
                 }
             }.onFailure { error ->
@@ -60,9 +44,30 @@ class ProductDetailsViewModel @Inject constructor(
                     it.copy(
                         errorMessage = error.message ?: "Failed to load product details",
                         isLoading = false
-                    )
+                    ) 
                 }
             }
+        }
+    }
+
+    /**
+     * Called when the user selects a specific attribute value.
+     */
+    fun onAttributeSelected(attributeName: String, value: String) {
+        _productDetailsUiState.update { state ->
+            val newSelectedAttributes = state.selectedAttributes.toMutableMap().apply {
+                put(attributeName, value)
+            }
+            
+            // Try to find a variant that matches the current selection combination
+            val matchedVariant = state.variants.find { variant ->
+                variant.combination == newSelectedAttributes
+            }
+
+            state.copy(
+                selectedAttributes = newSelectedAttributes,
+                selectedVariant = matchedVariant
+            )
         }
     }
 }

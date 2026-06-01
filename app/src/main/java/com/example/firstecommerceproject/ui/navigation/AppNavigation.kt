@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.firstecommerceproject.ui.screens.AllCategoriesScreen
+import com.example.firstecommerceproject.ui.screens.AllProductsScreen
 import com.example.firstecommerceproject.ui.screens.AuthScreen
 import com.example.firstecommerceproject.ui.screens.ProductsByCategoryScreen
 import com.example.firstecommerceproject.ui.screens.LandingScreen
@@ -101,6 +102,12 @@ fun AppNavigation(
                 onSeeAllClick = {
                     navController.navigate(Routes.AllCategoriesScreen.route)
                 },
+                onProductSeeAllClick = {
+                    navController.navigate(Routes.AllProductsScreen.route)
+                },
+                onProductClick = { productId ->
+                    navController.navigate(Routes.ProductDetailsScreen.createRoute(productId))
+                },
                 onLogoutSuccess = {
                     navController.navigate(Routes.AuthScreen.route) {
                         popUpTo(Routes.LandingScreen.route) { inclusive = true }
@@ -116,6 +123,17 @@ fun AppNavigation(
                 homeViewModel = homeViewModel,
                 onCategoryClick = { category ->
                     navController.navigate(Routes.CategoryProductScreen.createRoute(category))
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // All Products Screen
+        composable(route = Routes.AllProductsScreen.route) {
+            AllProductsScreen(
+                homeViewModel = homeViewModel,
+                onProductClick = { productId ->
+                    navController.navigate(Routes.ProductDetailsScreen.createRoute(productId))
                 },
                 onBackClick = { navController.popBackStack() }
             )
