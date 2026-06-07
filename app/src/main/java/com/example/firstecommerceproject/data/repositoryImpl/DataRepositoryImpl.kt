@@ -163,4 +163,36 @@ class DataRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun toggleWishlist(productId: String): Result<Unit> {
+        return try {
+            firebaseDataService.toggleWishlist(productId)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun isProductInWishlist(productId: String): Result<Boolean> {
+        return try {
+            val result = firebaseDataService.isProductInWishlist(productId)
+            Result.success(result)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getWishlistProducts(): Result<List<Product>> {
+        return try {
+            val productIds = firebaseDataService.getWishlistProductIds()
+            if (productIds.isEmpty()) return Result.success(emptyList())
+
+            val products = productIds.mapNotNull { id ->
+                firebaseDataService.getProductById(id)?.toObject(Product::class.java)?.copy(id = id)
+            }
+            Result.success(products)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

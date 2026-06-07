@@ -13,14 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -55,6 +48,7 @@ import com.example.firstecommerceproject.ui.viewmodel.HomeViewModel
  * @param homeViewModel The ViewModel that manages the home screen's state.
  * @param onCategoryClick Callback when a category item is selected.
  * @param onSeeAllClick Callback when "See All" categories is clicked.
+ * @param onProductSeeAllClick Callback when "See All" products is clicked.
  * @param onProductClick Callback when a product item is clicked.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,7 +77,8 @@ fun HomeScreen(
             onCategoryClick = onCategoryClick,
             onSeeAllClick = onSeeAllClick,
             onProductSeeAllClick = onProductSeeAllClick,
-            onProductClick = onProductClick
+            onProductClick = onProductClick,
+            onFavouriteClick = homeViewModel::toggleWishlist
         )
     }
 }
@@ -91,13 +86,6 @@ fun HomeScreen(
 /**
  * Stateless content version of the Home Screen.
  * Better for previews and unit testing.
- *
- * @param homeUiState The current UI state containing banners, categories, etc.
- * @param modifier Modifier for the layout.
- * @param onBannerClick Action for banner interactions.
- * @param onCategoryClick Action for category interactions.
- * @param onSeeAllClick Action for "See All" categories interaction.
- * @param onProductClick Action for product interactions.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -108,7 +96,8 @@ fun HomeScreenContent(
     onCategoryClick: (String) -> Unit = {},
     onSeeAllClick: () -> Unit = {},
     onProductSeeAllClick: () -> Unit = {},
-    onProductClick: (String) -> Unit = {}
+    onProductClick: (String) -> Unit = {},
+    onFavouriteClick: (String) -> Unit = {}
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -205,6 +194,8 @@ fun HomeScreenContent(
                 ProductItemView(
                     modifier = Modifier.width(productItemWidth),
                     product = product,
+                    isFavourite = homeUiState.wishlistIds.contains(product.id),
+                    onFavouriteClick = { onFavouriteClick(product.id) },
                     onClick = { onProductClick(product.id) }
                 )
             }

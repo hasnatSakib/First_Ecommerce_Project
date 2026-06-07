@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
@@ -84,6 +85,7 @@ fun ProductDetailsPage(
         productDetailsUiState = productDetailsUiState,
         onBackClick = onBackClick,
         onAttributeSelected = viewModel::onAttributeSelected,
+        onToggleWishlist = viewModel::onToggleWishlist,
         onAddToCart = { _, _ -> /* TODO */ }
     )
 }
@@ -98,6 +100,7 @@ fun ProductDetailsContent(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onAttributeSelected: (String, String) -> Unit = { _, _ -> },
+    onToggleWishlist: () -> Unit = {},
     onAddToCart: (Product, ProductVariant?) -> Unit = { _, _ -> }
 ) {
     Scaffold(
@@ -110,8 +113,12 @@ fun ProductDetailsContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* TODO */ }) {
-                        Icon(Icons.Default.FavoriteBorder, contentDescription = "Favorite")
+                    IconButton(onClick = onToggleWishlist) {
+                        Icon(
+                            imageVector = if (productDetailsUiState.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (productDetailsUiState.isFavourite) "Remove from Favorites" else "Add to Favorites",
+                            tint = if (productDetailsUiState.isFavourite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
             )

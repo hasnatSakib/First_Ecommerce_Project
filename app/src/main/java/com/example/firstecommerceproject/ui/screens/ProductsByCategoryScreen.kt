@@ -133,6 +133,8 @@ fun ProductsByCategoryScreen(
                         items(products, key = { it.id }) { product ->
                             ProductItemView(
                                 product = product,
+                                isFavourite = productsByCategoryUiState.wishlistIds.contains(product.id),
+                                onFavouriteClick = { productsByCategoryViewModel.toggleWishlist(product.id) },
                                 onClick = { onProductClick(product.id) }
                             )
                         }

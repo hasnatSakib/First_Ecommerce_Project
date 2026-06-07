@@ -11,6 +11,7 @@ import com.example.firstecommerceproject.domain.models.Product
  */
 data class ProductsByCategoryUiState(
     val products: List<Product> = emptyList(),
+    val wishlistIds: Set<String> = emptySet(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

@@ -65,4 +65,19 @@ interface DataRepository {
      * @return A [Result] containing a list of [ProductVariant]s or an error.
      */
     suspend fun getProductVariants(productId: String): Result<List<ProductVariant>?>
+
+    /**
+     * Toggles a product in the user's wishlist.
+     */
+    suspend fun toggleWishlist(productId: String): Result<Unit>
+
+    /**
+     * Checks if a product is in the user's wishlist.
+     */
+    suspend fun isProductInWishlist(productId: String): Result<Boolean>
+
+    /**
+     * Retrieves all products in the user's wishlist.
+     */
+    suspend fun getWishlistProducts(): Result<List<Product>>
 }

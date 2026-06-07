@@ -117,4 +117,35 @@ class FirebaseDataService @Inject constructor(
         
         awaitClose { subscription.remove() }
     }
+
+    /**
+     * Toggles the wishlist status of a product for the current user.
+     */
+    suspend fun toggleWishlist(productId: String) {
+        val uid = auth.currentUser?.uid ?: return
+        val wishlistRef = firestore.collection("users").document(uid).collection("wishlist").document(productId)
+        val snapshot = wishlistRef.get().await()
+        
+        if (snapshot.exists()) {
+            wishlistRef.delete().await()
+        } else {
+            wishlistRef.set(mapOf("addedAt" to com.google.firebase.Timestamp.now())).await()
+        }
+    }
+
+    /**
+     * Checks if a product is in the user's wishlist.
+     */
+    suspend fun isProductInWishlist(productId: String): Boolean {
+        val uid = auth.currentUser?.uid ?: return false
+        return firestore.collection("users").document(uid).collection("wishlist").document(productId).get().await().exists()
+    }
+
+    /**
+     * Retrieves all product IDs in the user's wishlist.
+     */
+    suspend fun getWishlistProductIds(): List<String> {
+        val uid = auth.currentUser?.uid ?: return emptyList()
+        return firestore.collection("users").document(uid).collection("wishlist").get().await().documents.map { it.id }
+    }
 }

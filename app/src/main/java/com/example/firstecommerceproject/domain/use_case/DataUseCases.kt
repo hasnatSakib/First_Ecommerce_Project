@@ -10,5 +10,8 @@ data class DataUseCases(
     val observeProductById: ObserveProductByIdUseCase,
     val getProductVariants: GetProductVariantsUseCase,
     val getProductWithVariants: GetProductWithVariantsUseCase,
-    val getProducts: GetProductsUseCase
+    val getProducts: GetProductsUseCase,
+    val toggleWishlist: ToggleWishlistUseCase,
+    val getWishlist: GetWishlistUseCase,
+    val isProductInWishlist: IsProductInWishlistUseCase
 )

@@ -21,7 +21,10 @@ import com.example.firstecommerceproject.domain.use_case.data.GetProductVariants
 import com.example.firstecommerceproject.domain.use_case.data.GetProductWithVariantsUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetProductsByCategoryUseCase
 import com.example.firstecommerceproject.domain.use_case.data.GetProductsUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetWishlistUseCase
+import com.example.firstecommerceproject.domain.use_case.data.IsProductInWishlistUseCase
 import com.example.firstecommerceproject.domain.use_case.data.ObserveProductByIdUseCase
+import com.example.firstecommerceproject.domain.use_case.data.ToggleWishlistUseCase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -81,7 +84,10 @@ object AppModule {
             observeProductById = ObserveProductByIdUseCase(dataRepository),
             getProductVariants = GetProductVariantsUseCase(dataRepository),
             getProductWithVariants = GetProductWithVariantsUseCase(dataRepository),
-            getProducts = GetProductsUseCase(dataRepository)
+            getProducts = GetProductsUseCase(dataRepository),
+            toggleWishlist = ToggleWishlistUseCase(dataRepository),
+            getWishlist = GetWishlistUseCase(dataRepository),
+            isProductInWishlist = IsProductInWishlistUseCase(dataRepository)
         )
     }
 }

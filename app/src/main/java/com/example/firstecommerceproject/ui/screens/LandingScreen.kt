@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.firstecommerceproject.domain.models.NavItem
 import com.example.firstecommerceproject.ui.viewmodel.HomeViewModel
 import com.example.firstecommerceproject.ui.viewmodel.ProfileViewModel
+import com.example.firstecommerceproject.ui.viewmodel.WishlistViewModel
 
 /**
  * Main application container screen that hosts the bottom navigation and top-level screens.
@@ -142,7 +143,14 @@ fun ContentScreen(
             onProductSeeAllClick = onProductSeeAllClick,
             onProductClick = onProductClick
         )
-        1 -> FavoritesScreen(modifier)
+        1 -> {
+            val wishlistViewModel: WishlistViewModel = hiltViewModel()
+            FavoritesScreen(
+                modifier = modifier,
+                viewModel = wishlistViewModel,
+                onProductClick = onProductClick
+            )
+        }
         2 -> CartScreen(modifier)
         3 -> {
             val profileViewModel: ProfileViewModel = hiltViewModel()

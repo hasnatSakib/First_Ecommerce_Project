@@ -40,12 +40,35 @@ class ProductsByCategoryViewModel @Inject constructor(
         _productsByCategoryUiState.update { it.copy(isLoading = true, errorMessage = null) }
         viewModelScope.launch {
             val result = dataUseCases.getProductsByCategory(category)
+            val wishlistResult = dataUseCases.getWishlist()
+            
             _productsByCategoryUiState.update { state ->
                 state.copy(
                     isLoading = false,
                     products = result.getOrNull() ?: emptyList(),
-                    errorMessage = result.exceptionOrNull()?.message
+                    wishlistIds = wishlistResult.getOrNull()?.map { it.id }?.toSet() ?: emptySet(),
+                    errorMessage = result.exceptionOrNull()?.message ?: wishlistResult.exceptionOrNull()?.message
                 )
+            }
+        }
+    }
+
+    /**
+     * Toggles the wishlist status of a product.
+     */
+    fun toggleWishlist(productId: String) {
+        viewModelScope.launch {
+            val result = dataUseCases.toggleWishlist(productId)
+            if (result.isSuccess) {
+                _productsByCategoryUiState.update { state ->
+                    val newWishlistIds = state.wishlistIds.toMutableSet()
+                    if (newWishlistIds.contains(productId)) {
+                        newWishlistIds.remove(productId)
+                    } else {
+                        newWishlistIds.add(productId)
+                    }
+                    state.copy(wishlistIds = newWishlistIds)
+                }
             }
         }
     }

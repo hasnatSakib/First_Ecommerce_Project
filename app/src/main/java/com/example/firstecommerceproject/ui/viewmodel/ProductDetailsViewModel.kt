@@ -27,6 +27,7 @@ class ProductDetailsViewModel @Inject constructor(
         
         viewModelScope.launch {
             val result = dataUseCases.getProductWithVariants(productId)
+            val isFavouriteResult = dataUseCases.isProductInWishlist(productId)
             
             result.onSuccess { pair ->
                 val (product, variants) = pair
@@ -34,6 +35,7 @@ class ProductDetailsViewModel @Inject constructor(
                     it.copy(
                         product = product,
                         variants = variants,
+                        isFavourite = isFavouriteResult.getOrDefault(false),
                         isLoading = false,
                         selectedAttributes = emptyMap(),
                         selectedVariant = null
@@ -46,6 +48,19 @@ class ProductDetailsViewModel @Inject constructor(
                         isLoading = false
                     ) 
                 }
+            }
+        }
+    }
+
+    /**
+     * Toggles the wishlist status of the current product.
+     */
+    fun onToggleWishlist() {
+        val productId = _productDetailsUiState.value.product?.id ?: return
+        viewModelScope.launch {
+            val result = dataUseCases.toggleWishlist(productId)
+            if (result.isSuccess) {
+                _productDetailsUiState.update { it.copy(isFavourite = !it.isFavourite) }
             }
         }
     }

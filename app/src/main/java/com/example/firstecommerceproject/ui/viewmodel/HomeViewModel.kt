@@ -50,6 +50,7 @@ class HomeViewModel @Inject constructor(
             val bannersResult = dataUseCases.getBanners()
             val categoriesResult = dataUseCases.getCategories()
             val productsResult = dataUseCases.getProducts()
+            val wishlistResult = dataUseCases.getWishlist()
 
             _homeUiState.update { state ->
                 state.copy(
@@ -58,11 +59,32 @@ class HomeViewModel @Inject constructor(
                     banners = bannersResult.getOrNull() ?: emptyList(),
                     categories = categoriesResult.getOrNull() ?: emptyList(),
                     products = productsResult.getOrNull() ?: emptyList(),
+                    wishlistIds = wishlistResult.getOrNull()?.map { it.id }?.toSet() ?: emptySet(),
                     errorMessage = (nameResult.exceptionOrNull()
                         ?: bannersResult.exceptionOrNull()
                         ?: categoriesResult.exceptionOrNull()
                         ?: productsResult.exceptionOrNull())?.message
                 )
+            }
+        }
+    }
+
+    /**
+     * Toggles the wishlist status of a product.
+     */
+    fun toggleWishlist(productId: String) {
+        viewModelScope.launch {
+            val result = dataUseCases.toggleWishlist(productId)
+            if (result.isSuccess) {
+                _homeUiState.update { state ->
+                    val newWishlistIds = state.wishlistIds.toMutableSet()
+                    if (newWishlistIds.contains(productId)) {
+                        newWishlistIds.remove(productId)
+                    } else {
+                        newWishlistIds.add(productId)
+                    }
+                    state.copy(wishlistIds = newWishlistIds)
+                }
             }
         }
     }

@@ -13,6 +13,7 @@ import com.example.firstecommerceproject.domain.models.Product
  * @property banners A list of URLs for the promotional banners displayed at the top.
  * @property categories A list of product categories fetched from the backend.
  * @property products A list of all products fetched from the backend.
+ * @property wishlistIds A set of product IDs currently in the user's wishlist.
  * @property isLoading Indicates if a data fetch operation is currently in progress.
  * @property errorMessage Contains a descriptive error message if a data fetch fails.
  */
@@ -21,6 +22,7 @@ data class HomeUiState(
     val banners: List<String> = emptyList(),
     val categories: List<Category> = emptyList(),
     val products: List<Product> = emptyList(),
+    val wishlistIds: Set<String> = emptySet(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )
