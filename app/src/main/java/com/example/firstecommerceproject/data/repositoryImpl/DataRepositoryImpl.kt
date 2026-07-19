@@ -195,4 +195,36 @@ class DataRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun toggleFavorite(productId: String): Result<Unit> {
+        return try {
+            firebaseDataService.toggleFavorite(productId)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun isProductInFavorite(productId: String): Result<Boolean> {
+        return try {
+            val result = firebaseDataService.isProductInFavorite(productId)
+            Result.success(result)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getFavoriteProducts(): Result<List<Product>> {
+        return try {
+            val productIds = firebaseDataService.getFavoriteProductIds()
+            if (productIds.isEmpty()) return Result.success(emptyList())
+
+            val products = productIds.mapNotNull { id ->
+                firebaseDataService.getProductById(id)?.toObject(Product::class.java)?.copy(id = id)
+            }
+            Result.success(products)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

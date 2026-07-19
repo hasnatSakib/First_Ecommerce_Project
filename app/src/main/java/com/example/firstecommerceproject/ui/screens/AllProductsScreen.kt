@@ -88,8 +88,8 @@ fun AllProductsScreen(
                     ) { product ->
                         ProductItemView(
                             product = product,
-                            isFavourite = homeUiState.wishlistIds.contains(product.id),
-                            onFavouriteClick = { homeViewModel.toggleWishlist(product.id) },
+                            isFavourite = homeUiState.favoriteIds.contains(product.id),
+                            onFavouriteClick = { homeViewModel.toggleFavorite(product.id) },
                             onClick = { onProductClick(product.id) }
                         )
                     }

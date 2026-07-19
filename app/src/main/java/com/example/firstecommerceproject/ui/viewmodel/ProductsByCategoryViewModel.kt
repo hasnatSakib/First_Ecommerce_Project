@@ -41,14 +41,38 @@ class ProductsByCategoryViewModel @Inject constructor(
         viewModelScope.launch {
             val result = dataUseCases.getProductsByCategory(category)
             val wishlistResult = dataUseCases.getWishlist()
+            val favoriteResult = dataUseCases.getFavorites()
             
             _productsByCategoryUiState.update { state ->
                 state.copy(
                     isLoading = false,
                     products = result.getOrNull() ?: emptyList(),
                     wishlistIds = wishlistResult.getOrNull()?.map { it.id }?.toSet() ?: emptySet(),
-                    errorMessage = result.exceptionOrNull()?.message ?: wishlistResult.exceptionOrNull()?.message
+                    favoriteIds = favoriteResult.getOrNull()?.map { it.id }?.toSet() ?: emptySet(),
+                    errorMessage = result.exceptionOrNull()?.message 
+                        ?: wishlistResult.exceptionOrNull()?.message
+                        ?: favoriteResult.exceptionOrNull()?.message
                 )
+            }
+        }
+    }
+
+    /**
+     * Toggles the favorite status of a product.
+     */
+    fun toggleFavorite(productId: String) {
+        viewModelScope.launch {
+            val result = dataUseCases.toggleFavorite(productId)
+            if (result.isSuccess) {
+                _productsByCategoryUiState.update { state ->
+                    val newFavoriteIds = state.favoriteIds.toMutableSet()
+                    if (newFavoriteIds.contains(productId)) {
+                        newFavoriteIds.remove(productId)
+                    } else {
+                        newFavoriteIds.add(productId)
+                    }
+                    state.copy(favoriteIds = newFavoriteIds)
+                }
             }
         }
     }

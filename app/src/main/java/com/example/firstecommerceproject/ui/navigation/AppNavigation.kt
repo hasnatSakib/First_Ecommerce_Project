@@ -10,6 +10,8 @@ import androidx.navigation.navArgument
 import com.example.firstecommerceproject.ui.screens.AllCategoriesScreen
 import com.example.firstecommerceproject.ui.screens.AllProductsScreen
 import com.example.firstecommerceproject.ui.screens.AuthScreen
+import com.example.firstecommerceproject.ui.screens.FavoritesScreen
+import com.example.firstecommerceproject.ui.screens.WishlistScreen
 import com.example.firstecommerceproject.ui.screens.ProductsByCategoryScreen
 import com.example.firstecommerceproject.ui.screens.LandingScreen
 import com.example.firstecommerceproject.ui.screens.LoginScreen
@@ -20,6 +22,7 @@ import com.example.firstecommerceproject.ui.viewmodel.LoginViewModel
 import com.example.firstecommerceproject.ui.viewmodel.ProductDetailsViewModel
 import com.example.firstecommerceproject.ui.viewmodel.ProductsByCategoryViewModel
 import com.example.firstecommerceproject.ui.viewmodel.SignupViewModel
+import com.example.firstecommerceproject.ui.viewmodel.WishlistViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 
 /**
@@ -112,6 +115,9 @@ fun AppNavigation(
                     navController.navigate(Routes.AuthScreen.route) {
                         popUpTo(Routes.LandingScreen.route) { inclusive = true }
                     }
+                },
+                onWishlistClick = {
+                    navController.navigate(Routes.WishlistScreen.route)
                 }
             )
         }
@@ -167,6 +173,19 @@ fun AppNavigation(
                 modifier = modifier,
                 productId = productId,
                 viewModel = productDetailsViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // Wishlist Screen
+        composable(route = Routes.WishlistScreen.route) {
+            val wishlistViewModel: WishlistViewModel = hiltViewModel()
+            WishlistScreen(
+                modifier = modifier,
+                viewModel = wishlistViewModel,
+                onProductClick = { productId ->
+                    navController.navigate(Routes.ProductDetailsScreen.createRoute(productId))
+                },
                 onBackClick = { navController.popBackStack() }
             )
         }

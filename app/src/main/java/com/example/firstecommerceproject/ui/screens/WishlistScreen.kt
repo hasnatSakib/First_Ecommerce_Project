@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,29 +24,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.firstecommerceproject.ui.screens.components.ProductItemView
-import com.example.firstecommerceproject.ui.viewmodel.FavoritesViewModel
+import com.example.firstecommerceproject.ui.screens.components.ProductListItemView
+import com.example.firstecommerceproject.ui.viewmodel.WishlistViewModel
 
 /**
- * Screen displaying the user's favorite products.
- *
- * @param modifier Modifier for the screen container.
- * @param viewModel ViewModel for favorites data.
- * @param onProductClick Callback when a product is clicked.
+ * Screen displaying the user's wishlist items in a list view.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritesScreen(
+fun WishlistScreen(
     modifier: Modifier = Modifier,
-    viewModel: FavoritesViewModel,
-    onProductClick: (String) -> Unit
+    viewModel: WishlistViewModel,
+    onProductClick: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
-    val favoritesUiState by viewModel.favoritesUiState.collectAsStateWithLifecycle()
+    val wishlistUiState by viewModel.wishlistUiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = { Text("My Favorites") })
+            TopAppBar(
+                title = { Text("My Wishlist") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
         }
     ) { paddingValues ->
         Box(
@@ -52,39 +59,36 @@ fun FavoritesScreen(
                 .padding(paddingValues)
         ) {
             when {
-                favoritesUiState.isLoading -> {
+                wishlistUiState.isLoading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-                favoritesUiState.errorMessage != null -> {
+                wishlistUiState.errorMessage != null -> {
                     Text(
-                        text = favoritesUiState.errorMessage!!,
+                        text = wishlistUiState.errorMessage!!,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.align(Alignment.Center),
                         textAlign = TextAlign.Center
                     )
                 }
-                favoritesUiState.products.isEmpty() -> {
+                wishlistUiState.products.isEmpty() -> {
                     Text(
-                        text = "You haven't favorited any products yet.",
+                        text = "Your wishlist is empty.",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.align(Alignment.Center),
                         textAlign = TextAlign.Center
                     )
                 }
                 else -> {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
+                    LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(favoritesUiState.products, key = { it.id }) { product ->
-                            ProductItemView(
+                        items(wishlistUiState.products, key = { it.id }) { product ->
+                            ProductListItemView(
                                 product = product,
-                                isFavourite = true,
-                                onFavouriteClick = { viewModel.toggleFavorite(product.id) },
-                                onClick = { onProductClick(product.id) }
+                                onClick = { onProductClick(product.id) },
+                                onRemoveClick = { viewModel.toggleWishlist(product.id) }
                             )
                         }
                     }
@@ -93,4 +97,3 @@ fun FavoritesScreen(
         }
     }
 }
-

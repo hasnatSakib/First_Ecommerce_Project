@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -24,13 +25,15 @@ import com.example.firstecommerceproject.ui.viewmodel.ProfileViewModel
  * @param modifier Modifier for the screen container.
  * @param viewModel ViewModel handling the profile state and logic.
  * @param onLogoutSuccess Callback when the user is logged out.
+ * @param onWishlistClick Callback when the user clicks the wishlist option.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel,
-    onLogoutSuccess: () -> Unit
+    onLogoutSuccess: () -> Unit,
+    onWishlistClick: () -> Unit
 ) {
     val profileUiState by viewModel.profileUiState.collectAsStateWithLifecycle()
 
@@ -86,6 +89,19 @@ fun ProfileScreen(
                     )
                     
                     Spacer(modifier = Modifier.height(48.dp))
+
+                    // Wishlist Option
+                    OutlinedButton(
+                        onClick = onWishlistClick,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Icon(Icons.Default.Favorite, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("My Wishlist")
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Logout Option
                     OutlinedButton(

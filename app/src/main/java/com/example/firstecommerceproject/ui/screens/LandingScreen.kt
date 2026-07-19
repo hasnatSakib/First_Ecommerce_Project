@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.firstecommerceproject.domain.models.NavItem
+import com.example.firstecommerceproject.ui.viewmodel.FavoritesViewModel
 import com.example.firstecommerceproject.ui.viewmodel.HomeViewModel
 import com.example.firstecommerceproject.ui.viewmodel.ProfileViewModel
 import com.example.firstecommerceproject.ui.viewmodel.WishlistViewModel
@@ -50,7 +51,8 @@ fun LandingScreen(
     onSeeAllClick: () -> Unit,
     onProductSeeAllClick: () -> Unit,
     onProductClick: (String) -> Unit,
-    onLogoutSuccess: () -> Unit
+    onLogoutSuccess: () -> Unit,
+    onWishlistClick: () -> Unit
 ) {
     // List of top-level destinations for the bottom navigation bar
     val navItemList = listOf(
@@ -104,7 +106,9 @@ fun LandingScreen(
                     onSeeAllClick = onSeeAllClick,
                     onProductSeeAllClick = onProductSeeAllClick,
                     onProductClick = onProductClick,
-                    onLogoutSuccess = onLogoutSuccess
+                    onLogoutSuccess = onLogoutSuccess,
+                    onIndexChange = { selectedIndex = it },
+                    onNavigateToWishlist = onWishlistClick
                 )
             }
         }
@@ -122,6 +126,7 @@ fun LandingScreen(
  * @param onProductSeeAllClick Callback for "See All" products navigation.
  * @param onProductClick Callback for product clicks.
  * @param onLogoutSuccess Callback when the user is logged out.
+ * @param onIndexChange Callback to update the selected index.
  */
 @Composable
 fun ContentScreen(
@@ -132,7 +137,9 @@ fun ContentScreen(
     onSeeAllClick: () -> Unit,
     onProductSeeAllClick: () -> Unit,
     onProductClick: (String) -> Unit,
-    onLogoutSuccess: () -> Unit
+    onLogoutSuccess: () -> Unit,
+    onIndexChange: (Int) -> Unit,
+    onNavigateToWishlist: () -> Unit
 ) {
     when (selectedIndex) {
         0 -> HomeScreen(
@@ -144,10 +151,10 @@ fun ContentScreen(
             onProductClick = onProductClick
         )
         1 -> {
-            val wishlistViewModel: WishlistViewModel = hiltViewModel()
+            val favoritesViewModel: FavoritesViewModel = hiltViewModel()
             FavoritesScreen(
                 modifier = modifier,
-                viewModel = wishlistViewModel,
+                viewModel = favoritesViewModel,
                 onProductClick = onProductClick
             )
         }
@@ -157,7 +164,8 @@ fun ContentScreen(
             ProfileScreen(
                 modifier = modifier,
                 viewModel = profileViewModel,
-                onLogoutSuccess = onLogoutSuccess
+                onLogoutSuccess = onLogoutSuccess,
+                onWishlistClick = onNavigateToWishlist
             )
         }
     }

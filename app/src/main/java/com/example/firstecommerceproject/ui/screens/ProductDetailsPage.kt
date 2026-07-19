@@ -1,5 +1,6 @@
 package com.example.firstecommerceproject.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,6 +26,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -38,6 +41,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -86,6 +90,7 @@ fun ProductDetailsPage(
         onBackClick = onBackClick,
         onAttributeSelected = viewModel::onAttributeSelected,
         onToggleWishlist = viewModel::onToggleWishlist,
+        onToggleFavorite = viewModel::onToggleFavorite,
         onAddToCart = { _, _ -> /* TODO */ }
     )
 }
@@ -101,6 +106,7 @@ fun ProductDetailsContent(
     onBackClick: () -> Unit = {},
     onAttributeSelected: (String, String) -> Unit = { _, _ -> },
     onToggleWishlist: () -> Unit = {},
+    onToggleFavorite: () -> Unit = {},
     onAddToCart: (Product, ProductVariant?) -> Unit = { _, _ -> }
 ) {
     Scaffold(
@@ -113,7 +119,7 @@ fun ProductDetailsContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onToggleWishlist) {
+                    IconButton(onClick = onToggleFavorite) {
                         Icon(
                             imageVector = if (productDetailsUiState.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = if (productDetailsUiState.isFavourite) "Remove from Favorites" else "Add to Favorites",
@@ -129,14 +135,46 @@ fun ProductDetailsContent(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                    Button(
-                        onClick = { onAddToCart(product, productDetailsUiState.selectedVariant) },
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Add to Cart")
+                        OutlinedIconButton(
+                            onClick = onToggleWishlist,
+                            modifier = Modifier.size(50.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = if (productDetailsUiState.isInWishlist) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = if (productDetailsUiState.isInWishlist) "Remove from Wishlist" else "Add to Wishlist",
+                                    tint = if (productDetailsUiState.isInWishlist) Color.Red else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Icon(
+                                    imageVector = if (productDetailsUiState.isInWishlist) Icons.Default.Check else Icons.Default.Add,
+                                    contentDescription = null,
+                                    tint = if (productDetailsUiState.isInWishlist) Color.White else MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .size(12.dp)
+                                        .align(Alignment.Center)
+                                        .padding(top = if (productDetailsUiState.isInWishlist) 0.dp else 2.dp)
+                                )
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Button(
+                            onClick = { onAddToCart(product, productDetailsUiState.selectedVariant) },
+                            modifier = Modifier.weight(1f).height(50.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Add to Cart")
+                        }
                     }
                 }
             }

@@ -78,7 +78,7 @@ fun HomeScreen(
             onSeeAllClick = onSeeAllClick,
             onProductSeeAllClick = onProductSeeAllClick,
             onProductClick = onProductClick,
-            onFavouriteClick = homeViewModel::toggleWishlist
+            onFavouriteClick = homeViewModel::toggleFavorite
         )
     }
 }
@@ -194,7 +194,7 @@ fun HomeScreenContent(
                 ProductItemView(
                     modifier = Modifier.width(productItemWidth),
                     product = product,
-                    isFavourite = homeUiState.wishlistIds.contains(product.id),
+                    isFavourite = homeUiState.favoriteIds.contains(product.id),
                     onFavouriteClick = { onFavouriteClick(product.id) },
                     onClick = { onProductClick(product.id) }
                 )

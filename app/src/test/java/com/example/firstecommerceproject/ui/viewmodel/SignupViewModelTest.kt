@@ -2,7 +2,9 @@ package com.example.firstecommerceproject.ui.viewmodel
 
 import app.cash.turbine.test
 import com.example.firstecommerceproject.domain.use_case.AuthUseCases
+import com.example.firstecommerceproject.domain.use_case.auth.DeleteAccountUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.GetCurrentUserUseCase
+import com.example.firstecommerceproject.domain.use_case.auth.GetNameUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.LoginUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.LogoutUseCase
 import com.example.firstecommerceproject.domain.use_case.auth.SignupUseCase
@@ -31,6 +33,8 @@ class SignupViewModelTest {
     private val signupUseCase: SignupUseCase = mockk()
     private val logoutUseCase: LogoutUseCase = mockk()
     private val getCurrentUserUseCase: GetCurrentUserUseCase = mockk()
+    private val getNameUseCase: GetNameUseCase = mockk()
+    private val deleteAccountUseCase: DeleteAccountUseCase = mockk()
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -42,7 +46,8 @@ class SignupViewModelTest {
             signup = signupUseCase,
             logout = logoutUseCase,
             getCurrentUser = getCurrentUserUseCase,
-            getName = mockk()
+            getName = getNameUseCase,
+            deleteAccount = deleteAccountUseCase
         )
         viewModel = SignupViewModel(authUseCases)
     }

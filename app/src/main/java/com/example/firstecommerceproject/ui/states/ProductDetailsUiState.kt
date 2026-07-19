@@ -12,6 +12,7 @@ data class ProductDetailsUiState(
     val selectedAttributes: Map<String, String> = emptyMap(),
     val selectedVariant: ProductVariant? = null,
     val isFavourite: Boolean = false,
+    val isInWishlist: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

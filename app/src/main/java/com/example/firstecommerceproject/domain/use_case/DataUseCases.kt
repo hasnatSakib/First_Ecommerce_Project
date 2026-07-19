@@ -13,5 +13,8 @@ data class DataUseCases(
     val getProducts: GetProductsUseCase,
     val toggleWishlist: ToggleWishlistUseCase,
     val getWishlist: GetWishlistUseCase,
-    val isProductInWishlist: IsProductInWishlistUseCase
+    val isProductInWishlist: IsProductInWishlistUseCase,
+    val toggleFavorite: ToggleFavoriteUseCase,
+    val getFavorites: GetFavoritesUseCase,
+    val isProductInFavorite: IsProductInFavoriteUseCase
 )

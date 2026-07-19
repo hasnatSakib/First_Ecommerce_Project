@@ -80,4 +80,19 @@ interface DataRepository {
      * Retrieves all products in the user's wishlist.
      */
     suspend fun getWishlistProducts(): Result<List<Product>>
+
+    /**
+     * Toggles a product in the user's favorites.
+     */
+    suspend fun toggleFavorite(productId: String): Result<Unit>
+
+    /**
+     * Checks if a product is in the user's favorites.
+     */
+    suspend fun isProductInFavorite(productId: String): Result<Boolean>
+
+    /**
+     * Retrieves all products in the user's favorites.
+     */
+    suspend fun getFavoriteProducts(): Result<List<Product>>
 }

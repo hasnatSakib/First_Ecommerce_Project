@@ -148,4 +148,35 @@ class FirebaseDataService @Inject constructor(
         val uid = auth.currentUser?.uid ?: return emptyList()
         return firestore.collection("users").document(uid).collection("wishlist").get().await().documents.map { it.id }
     }
+
+    /**
+     * Toggles the favorite status of a product for the current user.
+     */
+    suspend fun toggleFavorite(productId: String) {
+        val uid = auth.currentUser?.uid ?: return
+        val favoriteRef = firestore.collection("users").document(uid).collection("favorites").document(productId)
+        val snapshot = favoriteRef.get().await()
+        
+        if (snapshot.exists()) {
+            favoriteRef.delete().await()
+        } else {
+            favoriteRef.set(mapOf("addedAt" to com.google.firebase.Timestamp.now())).await()
+        }
+    }
+
+    /**
+     * Checks if a product is in the user's favorites.
+     */
+    suspend fun isProductInFavorite(productId: String): Boolean {
+        val uid = auth.currentUser?.uid ?: return false
+        return firestore.collection("users").document(uid).collection("favorites").document(productId).get().await().exists()
+    }
+
+    /**
+     * Retrieves all product IDs in the user's favorites.
+     */
+    suspend fun getFavoriteProductIds(): List<String> {
+        val uid = auth.currentUser?.uid ?: return emptyList()
+        return firestore.collection("users").document(uid).collection("favorites").get().await().documents.map { it.id }
+    }
 }

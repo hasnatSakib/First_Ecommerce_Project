@@ -23,6 +23,7 @@ data class HomeUiState(
     val categories: List<Category> = emptyList(),
     val products: List<Product> = emptyList(),
     val wishlistIds: Set<String> = emptySet(),
+    val favoriteIds: Set<String> = emptySet(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

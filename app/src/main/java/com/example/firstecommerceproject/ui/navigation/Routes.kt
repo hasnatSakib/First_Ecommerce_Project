@@ -41,13 +41,14 @@ sealed class Routes(
         fun createRoute(category: String) = "categoryProductScreen/$category"
     }
 
-    /**
-     * Route for displaying details of a specific product.
-     */
+    /** Route for displaying details of a specific product. */
     data object ProductDetailsScreen : Routes("productDetailsScreen/{productId}") {
         /**
          * Helper function to build the route string with a specific [productId].
          */
         fun createRoute(productId: String) = "productDetailsScreen/$productId"
     }
+
+    /** Route for displaying the user's wishlist/favorites. */
+    data object WishlistScreen : Routes("wishlistScreen")
 }

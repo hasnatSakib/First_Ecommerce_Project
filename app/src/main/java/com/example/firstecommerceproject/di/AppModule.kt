@@ -25,11 +25,14 @@ import com.example.firstecommerceproject.domain.use_case.data.GetWishlistUseCase
 import com.example.firstecommerceproject.domain.use_case.data.IsProductInWishlistUseCase
 import com.example.firstecommerceproject.domain.use_case.data.ObserveProductByIdUseCase
 import com.example.firstecommerceproject.domain.use_case.data.ToggleWishlistUseCase
+import com.example.firstecommerceproject.domain.use_case.data.GetFavoritesUseCase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.example.firstecommerceproject.domain.use_case.data.IsProductInFavoriteUseCase
+import com.example.firstecommerceproject.domain.use_case.data.ToggleFavoriteUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -87,7 +90,10 @@ object AppModule {
             getProducts = GetProductsUseCase(dataRepository),
             toggleWishlist = ToggleWishlistUseCase(dataRepository),
             getWishlist = GetWishlistUseCase(dataRepository),
-            isProductInWishlist = IsProductInWishlistUseCase(dataRepository)
+            isProductInWishlist = IsProductInWishlistUseCase(dataRepository),
+            toggleFavorite = ToggleFavoriteUseCase(dataRepository),
+            getFavorites = GetFavoritesUseCase(dataRepository),
+            isProductInFavorite = IsProductInFavoriteUseCase(dataRepository)
         )
     }
 }
