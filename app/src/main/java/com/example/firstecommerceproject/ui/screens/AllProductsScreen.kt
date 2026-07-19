@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.firstecommerceproject.ui.screens.components.ProductItemView
+import com.example.firstecommerceproject.ui.screens.components.ProductShimmerItem
 import com.example.firstecommerceproject.ui.viewmodel.HomeViewModel
 
 /**
@@ -67,7 +68,17 @@ fun AllProductsScreen(
                 .padding(paddingValues)
         ) {
             if (homeUiState.isLoading && homeUiState.products.isEmpty()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(6) {
+                        ProductShimmerItem()
+                    }
+                }
             } else if (homeUiState.errorMessage != null && homeUiState.products.isEmpty()) {
                 Text(
                     text = homeUiState.errorMessage ?: "Unknown error",

@@ -19,5 +19,7 @@ data class LoginUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isLoginSuccessful: Boolean = false,
-    val logoutSuccess: Boolean = false
+    val logoutSuccess: Boolean = false,
+    val emailError: String? = null,
+    val passwordError: String? = null
 )

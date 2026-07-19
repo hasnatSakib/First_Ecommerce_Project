@@ -32,17 +32,30 @@ class LoginViewModel @Inject constructor(
     val loginUiState = _loginUiState.asStateFlow()
 
     /**
-     * Updates the email address in the current UI state.
+     * Updates the email address in the current UI state and validates its format.
      */
     fun onEmailChange(newValue: String) {
-        _loginUiState.update { it.copy(email = newValue) }
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
+        val error = if (newValue.isBlank()) {
+            null
+        } else if (!emailRegex.matches(newValue) && newValue.any { it.isLetter() }) {
+            "Invalid email format"
+        } else {
+            null
+        }
+        _loginUiState.update { it.copy(email = newValue, emailError = error) }
     }
 
     /**
-     * Updates the password in the current UI state.
+     * Updates the password in the current UI state and validates its length.
      */
     fun onPasswordChange(newValue: String) {
-        _loginUiState.update { it.copy(password = newValue) }
+        val error = if (newValue.isNotBlank() && newValue.length < 6) {
+            "Password must be at least 6 characters"
+        } else {
+            null
+        }
+        _loginUiState.update { it.copy(password = newValue, passwordError = error) }
     }
 
     /**
@@ -60,6 +73,11 @@ class LoginViewModel @Inject constructor(
     fun onLoginClick() {
         val email = _loginUiState.value.email
         val password = _loginUiState.value.password
+
+        if (email.isBlank() || password.isBlank() || _loginUiState.value.emailError != null || _loginUiState.value.passwordError != null) {
+            _loginUiState.update { it.copy(errorMessage = "Please fix errors and fill all fields") }
+            return
+        }
 
         _loginUiState.update { it.copy(isLoading = true, errorMessage = null) }
 

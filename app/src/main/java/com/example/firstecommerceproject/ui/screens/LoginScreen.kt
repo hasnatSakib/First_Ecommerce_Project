@@ -159,6 +159,8 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth().focusRequester(emailFocusRequester),
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
+                        isError = loginUiState.emailError != null,
+                        supportingText = loginUiState.emailError?.let { { Text(it) } },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
@@ -183,6 +185,8 @@ fun LoginScreen(
                                 Icon(imageVector = icon, contentDescription = if (passwordVisible) "Hide password" else "Show password")
                             }
                         },
+                        isError = loginUiState.passwordError != null,
+                        supportingText = loginUiState.passwordError?.let { { Text(it) } },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -191,7 +195,7 @@ fun LoginScreen(
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Next
+                            imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
                            onDone = {

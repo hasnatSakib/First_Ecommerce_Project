@@ -34,6 +34,7 @@ import com.example.firstecommerceproject.domain.models.Product
 import com.example.firstecommerceproject.ui.screens.components.BannerView
 import com.example.firstecommerceproject.ui.screens.components.CategoriesView
 import com.example.firstecommerceproject.ui.screens.components.HeaderView
+import com.example.firstecommerceproject.ui.screens.components.HomeShimmerLoading
 import com.example.firstecommerceproject.ui.screens.components.ProductItemView
 import com.example.firstecommerceproject.ui.states.HomeUiState
 import com.example.firstecommerceproject.ui.theme.FirstEcommerceProjectTheme
@@ -70,16 +71,20 @@ fun HomeScreen(
         onRefresh = { homeViewModel.getHomeData() },
         modifier = modifier.fillMaxSize()
     ) {
-        HomeScreenContent(
-            modifier = Modifier.fillMaxSize(),
-            homeUiState = homeUiState,
-            onBannerClick = { /* TODO: Handle specific banner click actions */ },
-            onCategoryClick = onCategoryClick,
-            onSeeAllClick = onSeeAllClick,
-            onProductSeeAllClick = onProductSeeAllClick,
-            onProductClick = onProductClick,
-            onFavouriteClick = homeViewModel::toggleFavorite
-        )
+        if (homeUiState.isLoading && homeUiState.products.isEmpty()) {
+            HomeShimmerLoading()
+        } else {
+            HomeScreenContent(
+                modifier = Modifier.fillMaxSize(),
+                homeUiState = homeUiState,
+                onBannerClick = { /* TODO: Handle specific banner click actions */ },
+                onCategoryClick = onCategoryClick,
+                onSeeAllClick = onSeeAllClick,
+                onProductSeeAllClick = onProductSeeAllClick,
+                onProductClick = onProductClick,
+                onFavouriteClick = homeViewModel::toggleFavorite
+            )
+        }
     }
 }
 

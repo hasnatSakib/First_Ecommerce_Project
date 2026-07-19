@@ -25,5 +25,13 @@ data class SignupUiState(
     val mobile: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val isSignupSuccessful: Boolean = false
+    val isSignupSuccessful: Boolean = false,
+    val firstNameError: String? = null,
+    val lastNameError: String? = null,
+    val emailError: String? = null,
+    val mobileError: String? = null,
+    val passwordError: String? = null,
+    val confirmPasswordError: String? = null,
+    val passwordStrength: Float = 0f,
+    val passwordStrengthLabel: String = ""
 )

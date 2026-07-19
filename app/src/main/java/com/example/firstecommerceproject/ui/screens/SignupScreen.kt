@@ -1,6 +1,7 @@
 package com.example.firstecommerceproject.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -39,11 +41,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -139,6 +144,8 @@ fun SignupScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
+                            isError = signupUiState.firstNameError != null,
+                            supportingText = signupUiState.firstNameError?.let { { Text(it) } },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next
@@ -157,6 +164,8 @@ fun SignupScreen(
                                 .focusRequester(lastNameFocusRequester),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
+                            isError = signupUiState.lastNameError != null,
+                            supportingText = signupUiState.lastNameError?.let { { Text(it) } },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next
@@ -180,6 +189,8 @@ fun SignupScreen(
                             .focusRequester(emailFocusRequester),
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
+                        isError = signupUiState.emailError != null,
+                        supportingText = signupUiState.emailError?.let { { Text(it) } },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
@@ -202,6 +213,8 @@ fun SignupScreen(
                             .focusRequester(phoneFocusRequester),
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
+                        isError = signupUiState.mobileError != null,
+                        supportingText = signupUiState.mobileError?.let { { Text(it) } },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Phone,
                             imeAction = ImeAction.Next
@@ -231,6 +244,8 @@ fun SignupScreen(
                             .focusRequester(passwordFocusRequester),
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
+                        isError = signupUiState.passwordError != null,
+                        supportingText = signupUiState.passwordError?.let { { Text(it) } },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Next
@@ -239,6 +254,14 @@ fun SignupScreen(
                             onNext = { confirmPasswordFocusRequester.requestFocus() }
                         )
                     )
+
+                    if (signupUiState.password.isNotEmpty()) {
+                        Spacer(Modifier.height(8.dp))
+                        PasswordStrengthIndicator(
+                            strength = signupUiState.passwordStrength,
+                            label = signupUiState.passwordStrengthLabel
+                        )
+                    }
 
                     Spacer(Modifier.height(16.dp))
 
@@ -260,6 +283,8 @@ fun SignupScreen(
                             .focusRequester(confirmPasswordFocusRequester),
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
+                        isError = signupUiState.confirmPasswordError != null,
+                        supportingText = signupUiState.confirmPasswordError?.let { { Text(it) } },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
@@ -315,5 +340,44 @@ fun SignupScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun PasswordStrengthIndicator(strength: Float, label: String) {
+    val color = when {
+        strength < 0.4f -> MaterialTheme.colorScheme.error
+        strength < 0.7f -> Color(0xFFFFA500) // Orange
+        else -> Color(0xFF4CAF50) // Green
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Password Strength",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = color,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Spacer(Modifier.height(4.dp))
+        LinearProgressIndicator(
+            progress = { strength },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .clip(RoundedCornerShape(2.dp)),
+            color = color,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     }
 }

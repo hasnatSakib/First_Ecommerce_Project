@@ -152,6 +152,39 @@ class LoginViewModelTest {
     }
 
     @Test
+    fun `onEmailChange with invalid email sets emailError`() = runTest {
+        val invalidEmail = "invalid-email"
+        viewModel.onEmailChange(invalidEmail)
+        assertEquals("Invalid email format", viewModel.loginUiState.value.emailError)
+    }
+
+    @Test
+    fun `onEmailChange with valid email clears emailError`() = runTest {
+        val validEmail = "test@example.com"
+        viewModel.onEmailChange(validEmail)
+        assertEquals(null, viewModel.loginUiState.value.emailError)
+    }
+
+    @Test
+    fun `onPasswordChange with short password sets passwordError`() = runTest {
+        val shortPassword = "123"
+        viewModel.onPasswordChange(shortPassword)
+        assertEquals("Password must be at least 6 characters", viewModel.loginUiState.value.passwordError)
+    }
+
+    @Test
+    fun `onLoginClick with errors does not trigger loginUseCase`() = runTest {
+        viewModel.onEmailChange("invalid")
+        viewModel.onPasswordChange("123")
+        
+        viewModel.onLoginClick()
+        
+        // loginUiState.errorMessage should be set and isLoading should remain false
+        assertTrue(viewModel.loginUiState.value.errorMessage != null)
+        assertFalse(viewModel.loginUiState.value.isLoading)
+    }
+
+    @Test
     fun `isUserLoggedIn returns true when user exists`() {
         val mockUser: FirebaseUser = mockk()
         every { getCurrentUserUseCase() } returns mockUser

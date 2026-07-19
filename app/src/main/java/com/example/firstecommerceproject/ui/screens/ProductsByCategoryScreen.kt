@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.firstecommerceproject.ui.screens.components.ProductItemView
+import com.example.firstecommerceproject.ui.screens.components.ProductShimmerItem
 import com.example.firstecommerceproject.ui.viewmodel.ProductsByCategoryViewModel
 import java.util.Locale.getDefault
 
@@ -102,12 +103,18 @@ fun ProductsByCategoryScreen(
             contentAlignment = Alignment.Center
         ) {
             when {
-                productsByCategoryUiState.isLoading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        strokeWidth = 4.dp
-                    )
+                productsByCategoryUiState.isLoading && productsByCategoryUiState.products.isEmpty() -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(6) {
+                            ProductShimmerItem()
+                        }
+                    }
                 }
 
                 productsByCategoryUiState.errorMessage != null -> {
